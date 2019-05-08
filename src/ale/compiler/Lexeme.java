@@ -2,6 +2,7 @@ package ale.compiler;
 
 public enum Lexeme {
     
+    COMMENT("COMMENT"),
     PREPROCESOR("PREPROCESOR"),
     RESERVED_WORD("RESERVED_WORD"),
     FLOW_CONTROLLER("FLOW_CONTROLLER"),

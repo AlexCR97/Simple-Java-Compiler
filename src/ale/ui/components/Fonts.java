@@ -11,7 +11,7 @@ public class Fonts {
     public static final int SIZE_18 = 18;
     
     public static Font getCustomFont() {
-        Font font = new Font(Font.MONOSPACED, Font.PLAIN, SIZE_18);
+        Font font = new Font(Font.MONOSPACED, Font.PLAIN, SIZE_16);
         return font;
     }
     

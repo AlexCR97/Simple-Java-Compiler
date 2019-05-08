@@ -1,6 +1,11 @@
 package ale.ui.frames;
 
+import ale.Utils;
 import ale.compiler.lexer.Lexer;
+import ale.ui.modules.ExplorerModule;
+import ale.ui.modules.OutputModule;
+import ale.ui.modules.PhasesModule;
+import ale.ui.modules.SourceCodeModule;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -30,6 +35,11 @@ public class MainFrame extends javax.swing.JFrame {
         this.jButtonCompile.addActionListener(compileListener);
     }
 
+    public ExplorerModule getExplorerModule() { return explorerModule; }
+    public OutputModule getOutputModule() { return outputModule; }
+    public PhasesModule getPhasesModule() { return phasesModule; }
+    public SourceCodeModule getSourceCodeModule() { return sourceCodeModule; }
+    
     private final ActionListener newFileListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -61,6 +71,7 @@ public class MainFrame extends javax.swing.JFrame {
             
             files.put(fileName, file);
             sourceCodeModule.addTab(fileName, fileContent);
+            explorerModule.addItem(fileName);
         }
     };
     
@@ -97,7 +108,7 @@ public class MainFrame extends javax.swing.JFrame {
             
             String tabName = sourceCodeModule.getCurrentTabName();
             
-            files.remove(tabName);
+            //files.remove(tabName);
             sourceCodeModule.closeCurrentTab();
         }
     };
@@ -108,32 +119,44 @@ public class MainFrame extends javax.swing.JFrame {
             if (sourceCodeModule.getTabCount() == 0)
                 return;
             
+            outputModule.output("", OutputModule.OUTPUT_TYPE_PLAIN, true);
+            
             String fileName = sourceCodeModule.getCurrentTabName();
             File file = files.get(fileName);
+            String fileContent = sourceCodeModule.getCurrentTabContent();
             
-            if (!lexicalAnalysis(file)) {
-                ale.Utils.showMessageDialog(MainFrame.this, "Lexical analysis failed! :(");
-            }
+            Utils.saveFile(file, fileContent);
+            
+            lexicalAnalysis(file);
         }
     };
     
     private boolean lexicalAnalysis(File file) {
-        System.out.println("PERFORMING LEXICAL ANALYSIS ON FILE: " + file.getName());
+        this.outputModule.outputln(
+                "Performing lexical analysis on file: " + file.getName(),
+                OutputModule.OUTPUT_TYPE_PLAIN,
+                true
+        );
         
         lexer = new Lexer(file.getAbsolutePath());
-        while (lexer.hasNext()) {
-            System.out.printf("%s %s\n", lexer.currentToken(), lexer.currentLexeme());
-        }
+        while (lexer.hasNext()) {}
 
         if (!lexer.isSuccessful()) {
-            System.out.println("COULD NOT COMPLETE LEXICAL ANALYSIS");
-            System.out.println(lexer.getErrorMessage());
+            this.outputModule.outputln(
+                    "COMPILATION ERROR. Could not complete lexical analysis: " + lexer.getErrorMessage(),
+                    OutputModule.OUTPUT_TYPE_ERROR,
+                    false
+            );
             return false;
         }
 
-        System.out.println("LEXICAL ANALYSIS COMPLETED");
-        phasesModule.fillTokensTable(lexer.getTokensTable());
-            
+        this.outputModule.outputln(
+                "Lexical analysis successful!",
+                OutputModule.OUTPUT_TYPE_SUCCESS,
+                false
+        );
+        
+        phasesModule.fillTokensTable(lexer.getTokenItems());
         return true;
     }
     
@@ -160,9 +183,9 @@ public class MainFrame extends javax.swing.JFrame {
         jButtonCompileRun = new javax.swing.JButton();
         jPanelModules = new javax.swing.JPanel();
         sourceCodeModule = new ale.ui.modules.SourceCodeModule();
-        phasesModule = new ale.ui.modules.PhasesModule();
         outputModule = new ale.ui.modules.OutputModule();
         explorerModule = new ale.ui.modules.ExplorerModule();
+        phasesModule = new ale.ui.modules.PhasesModule();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuFile = new javax.swing.JMenu();
         jMenuItemNewFile = new javax.swing.JMenuItem();
@@ -255,33 +278,11 @@ public class MainFrame extends javax.swing.JFrame {
         jPanelModules.setBackground(new java.awt.Color(0, 204, 204));
         jPanelModules.setLayout(new java.awt.BorderLayout());
         jPanelModules.add(sourceCodeModule, java.awt.BorderLayout.CENTER);
-        jPanelModules.add(phasesModule, java.awt.BorderLayout.LINE_END);
 
-        javax.swing.GroupLayout outputModuleLayout = new javax.swing.GroupLayout(outputModule);
-        outputModule.setLayout(outputModuleLayout);
-        outputModuleLayout.setHorizontalGroup(
-            outputModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1078, Short.MAX_VALUE)
-        );
-        outputModuleLayout.setVerticalGroup(
-            outputModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
+        outputModule.setPreferredSize(new java.awt.Dimension(713, 200));
         jPanelModules.add(outputModule, java.awt.BorderLayout.PAGE_END);
-
-        javax.swing.GroupLayout explorerModuleLayout = new javax.swing.GroupLayout(explorerModule);
-        explorerModule.setLayout(explorerModuleLayout);
-        explorerModuleLayout.setHorizontalGroup(
-            explorerModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        explorerModuleLayout.setVerticalGroup(
-            explorerModuleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 558, Short.MAX_VALUE)
-        );
-
         jPanelModules.add(explorerModule, java.awt.BorderLayout.LINE_START);
+        jPanelModules.add(phasesModule, java.awt.BorderLayout.LINE_END);
 
         jPanelContainer.add(jPanelModules, java.awt.BorderLayout.CENTER);
 
@@ -348,7 +349,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private ale.ui.modules.ExplorerModule explorerModule;

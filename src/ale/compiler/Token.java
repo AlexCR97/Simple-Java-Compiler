@@ -7,7 +7,7 @@ public enum Token {
     
     COMMENT("\\/\\*[\\s\\S]*?\\*\\/"),
     
-    PREPROCESOR_IMPORT("@ale(\\/[a-z]+)+"),
+    PREPROCESOR_IMPORT("@[a-z]+(\\/[a-z]+)*"),
     
     RESERVED_WORD_NAMESPACE("namespace\\b"),
     RESERVED_WORD_VOID("void\\b"),

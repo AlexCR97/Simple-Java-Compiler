@@ -1,23 +1,19 @@
 package ale.ui.modules;
 
-import ale.compiler.TokenColor;
 import ale.ui.components.Fonts;
 import ale.ui.frames.MainFrame;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 
 public class SourceCodeModule extends javax.swing.JPanel {
 
-    private Map<String, JTextPane> content = new HashMap<>();
+    private final Map<String, JTextPane> content = new HashMap<>();
+    private final Map<String, JPanel> tabs = new HashMap<>();
+    
     private MainFrame app;
     
     public SourceCodeModule() {
@@ -29,7 +25,14 @@ public class SourceCodeModule extends javax.swing.JPanel {
     }
     
     public void addTab(String tabName) {
-        JPanel panel = createTextPanePanel(tabName, "");
+        JPanel panel;
+        if (tabs.containsKey(tabName))
+            panel = tabs.get(tabName);
+        else {
+            panel = createTextPanePanel(tabName, "");
+            tabs.put(tabName, panel);
+        }
+        
         this.jTabbedPane.addTab(tabName, panel);
         
         int index = this.jTabbedPane.getTabCount() - 1;
@@ -37,18 +40,40 @@ public class SourceCodeModule extends javax.swing.JPanel {
     }
     
     public void addTab(String tabName, String fileContents) {
-        JPanel panel = createTextPanePanel(tabName, fileContents);
+        JPanel panel;
+        if (tabs.containsKey(tabName))
+            panel = tabs.get(tabName);
+        else {
+            panel = createTextPanePanel(tabName, fileContents);
+            tabs.put(tabName, panel);
+        }
+        
         this.jTabbedPane.addTab(tabName, panel);
         
         int index = this.jTabbedPane.getTabCount() - 1;
         this.jTabbedPane.setSelectedIndex(index);
     }
     
-    public JPanel createTextPanePanel(String tabName, String fileContent) {
+    public void changeTab(String tabName) {
+        // if tab is open, select it
+        for (int i = 0; i < this.jTabbedPane.getTabCount(); i++) {
+            String currentTabName = this.jTabbedPane.getTitleAt(i);
+            if (currentTabName.equals(tabName)) {
+                this.jTabbedPane.setSelectedIndex(i);
+                return;
+            }
+        }
+        
+        // if tab is closed, open it
+        String tabContent = content.get(tabName).getText();
+        addTab(tabName, tabContent);
+    }
+    
+    private JPanel createTextPanePanel(String tabName, String fileContent) {
         JTextPane textPane = new JTextPane();
         textPane.setText(fileContent);
         textPane.setFont(Fonts.getCustomFont());
-        //appendToPaneColors(textPane, fileContent);
+        ale.Utils.setTabSize(textPane, 4);
         
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(textPane);
@@ -62,26 +87,6 @@ public class SourceCodeModule extends javax.swing.JPanel {
         return panel;
     }
     
-    private void appendToPaneColors(JTextPane textPane, String text) {
-        for (String s : text.split(" "))
-            appendToPane(textPane, s, TokenColor.getColor(s));
-    }
-    
-    private void appendToPane(JTextPane textpane, String text, Color color) {
-        StyleContext style = StyleContext.getDefaultStyleContext();
-        
-        AttributeSet attributes;
-        attributes = style.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color);
-        attributes = style.addAttribute(attributes, StyleConstants.FontFamily, "Consolas");
-        attributes = style.addAttribute(attributes, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-        int length = textpane.getDocument().getLength();
-        
-        textpane.setCaretPosition(length);
-        textpane.setCharacterAttributes(attributes, false);
-        textpane.replaceSelection(text);
-    }
-    
     public void closeCurrentTab() {
         int index = this.jTabbedPane.getSelectedIndex();
         if (index == -1)
@@ -89,7 +94,7 @@ public class SourceCodeModule extends javax.swing.JPanel {
         
         String tabName = getCurrentTabName();
         
-        content.remove(tabName);
+        //content.remove(tabName);
         this.jTabbedPane.remove(index);
     }
     

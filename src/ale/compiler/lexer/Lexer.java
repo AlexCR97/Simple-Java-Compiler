@@ -1,20 +1,22 @@
 package ale.compiler.lexer;
 
 import ale.compiler.Token;
+import ale.compiler.TokenColor;
+import ale.compiler.TokenItem;
+import java.awt.Color;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
 public class Lexer {
-    
-    public static final int FROM_FILE = 1;
-    public static final int FROM_INPUT = 2;
     
     private static final Set<Character> BLANK_CHARACTERS = new HashSet<>();
     static {
@@ -34,6 +36,7 @@ public class Lexer {
     private String errorMessage = "";
     
     private Map<String, String> tokensTable = new LinkedHashMap<>();
+    private List<TokenItem> tokenItems = new ArrayList<>();
     
     public Lexer(String filePath) {
         try {
@@ -88,7 +91,11 @@ public class Lexer {
                 token = t;
                 lexeme = input.substring(0, end);
                 
-                tokensTable.put(currentLexeme(), currentToken());
+                String currentLexeme = currentLexeme();
+                String currentToken = currentToken();
+                Color color = TokenColor.getColor(currentToken);
+                tokenItems.add(new TokenItem(0, currentLexeme, currentToken, color));
+                tokensTable.put(currentLexeme, currentToken);
                 
                 input.delete(0, end);
                 return true;
@@ -120,6 +127,10 @@ public class Lexer {
     
     public Map<String, String> getTokensTable() {
         return tokensTable;
+    }
+    
+    public List<TokenItem> getTokenItems() {
+        return tokenItems;
     }
     
 }

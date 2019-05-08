@@ -1,8 +1,10 @@
 package ale.ui.modules;
 
+import ale.compiler.TokenItem;
 import ale.ui.frames.MainFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 
@@ -29,14 +31,27 @@ public class PhasesModule extends javax.swing.JPanel {
     public void fillTokensTable(Map<String, String> tokensTable) {
         clearTokensTable();
         
-        for (Map.Entry<String, String> i : tokensTable.entrySet()) {
+        DefaultTableModel model = (DefaultTableModel) this.jTableTokens.getModel();
+        
+        tokensTable.entrySet().forEach((i) -> {
             String line = "0";
             String token = i.getKey();
             String lexeme = i.getValue();
             
-            DefaultTableModel model = (DefaultTableModel) this.jTableTokens.getModel();
             model.addRow(new String[] {line, lexeme, token});
-        }
+        });
+    }
+    
+    public void fillTokensTable(List<TokenItem> tokenItems) {
+        clearTokensTable();
+        
+        DefaultTableModel model = (DefaultTableModel) this.jTableTokens.getModel();
+        
+        tokenItems.forEach((token) ->{
+            model.addRow(new String[] {
+                String.valueOf(token.line), token.lexeme, token.token
+            });
+        });
     }
     
     private final ActionListener clearTokensTableListener = new ActionListener() {
@@ -50,6 +65,8 @@ public class PhasesModule extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanelHeader = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanelLexical = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -60,6 +77,15 @@ public class PhasesModule extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(102, 102, 102));
         setLayout(new java.awt.BorderLayout());
+
+        jPanelHeader.setBackground(new java.awt.Color(51, 51, 51));
+        jPanelHeader.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        jLabel1.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel1.setText("Analyzer");
+        jPanelHeader.add(jLabel1);
+
+        add(jPanelHeader, java.awt.BorderLayout.PAGE_START);
 
         jPanelLexical.setBackground(new java.awt.Color(102, 102, 102));
         jPanelLexical.setLayout(new java.awt.BorderLayout());
@@ -109,7 +135,7 @@ public class PhasesModule extends javax.swing.JPanel {
         );
         jPanelSyntaxLayout.setVerticalGroup(
             jPanelSyntaxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 577, Short.MAX_VALUE)
+            .addGap(0, 551, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Syntax", jPanelSyntax);
@@ -122,7 +148,7 @@ public class PhasesModule extends javax.swing.JPanel {
         );
         jPanelSemanticLayout.setVerticalGroup(
             jPanelSemanticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 577, Short.MAX_VALUE)
+            .addGap(0, 551, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Semantic", jPanelSemantic);
@@ -132,6 +158,8 @@ public class PhasesModule extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonClearTokensTable;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanelHeader;
     private javax.swing.JPanel jPanelLexical;
     private javax.swing.JPanel jPanelSemantic;
     private javax.swing.JPanel jPanelSyntax;
