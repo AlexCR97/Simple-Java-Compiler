@@ -1,6 +1,7 @@
 package ale.ui.modules;
 
 import ale.ui.components.Fonts;
+import ale.ui.components.SourceCodePanel;
 import ale.ui.frames.MainFrame;
 import java.awt.BorderLayout;
 import java.util.HashMap;
@@ -14,6 +15,8 @@ public class SourceCodeModule extends javax.swing.JPanel {
     private final Map<String, JTextPane> content = new HashMap<>();
     private final Map<String, JPanel> tabs = new HashMap<>();
     
+    private final Map<String, SourceCodePanel> codePanels = new HashMap<>();
+    
     private MainFrame app;
     
     public SourceCodeModule() {
@@ -22,6 +25,13 @@ public class SourceCodeModule extends javax.swing.JPanel {
 
     public void setApp(MainFrame app) {
         this.app = app;
+    }
+    
+    public void addCodeTab(String tabName, String fileContents) {
+        SourceCodePanel panel = createSourceCodePanel(tabName, fileContents);
+        this.jTabbedPane.addTab(tabName, panel);
+        int index = this.jTabbedPane.getTabCount() - 1;
+        this.jTabbedPane.setSelectedIndex(index);
     }
     
     public void addTab(String tabName) {
@@ -73,7 +83,9 @@ public class SourceCodeModule extends javax.swing.JPanel {
         JTextPane textPane = new JTextPane();
         textPane.setText(fileContent);
         textPane.setFont(Fonts.getCustomFont());
+        
         ale.Utils.setTabSize(textPane, 4);
+        ale.Utils.addUndoRedo(textPane);
         
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(textPane);
@@ -85,6 +97,18 @@ public class SourceCodeModule extends javax.swing.JPanel {
         content.put(tabName, textPane);
         
         return panel;
+    }
+    
+    private SourceCodePanel createSourceCodePanel(String tabName, String fileContent) {
+        SourceCodePanel codePanel = new SourceCodePanel();
+        codePanel.setCodeText(fileContent);
+        codePanel.setCodeText(fileContent);
+        codePanel.setCodeFont(Fonts.getCustomFont());
+        
+        ale.Utils.setTabSize(codePanel.getTextPane(), 4);
+        ale.Utils.addUndoRedo(codePanel.getTextPane());
+        
+        return codePanel;
     }
     
     public void closeCurrentTab() {
@@ -100,6 +124,13 @@ public class SourceCodeModule extends javax.swing.JPanel {
     
     public int getTabCount() {
         return this.jTabbedPane.getTabCount();
+    }
+    
+    public int getCurrentLineCount() {
+        String tabName = getCurrentTabName();
+        System.out.println("Getting current line count of " + tabName);
+        JTextPane textPane = content.get(tabName);
+        return ale.Utils.getLineCount(textPane);
     }
     
     public String getCurrentTabName() {

@@ -76,7 +76,7 @@ public class OutputModule extends javax.swing.JPanel {
         add(jPanelHeader, java.awt.BorderLayout.PAGE_START);
 
         jTextPaneOutput.setEditable(false);
-        jTextPaneOutput.setBackground(new java.awt.Color(51, 51, 51));
+        jTextPaneOutput.setBackground(new java.awt.Color(153, 153, 153));
         jTextPaneOutput.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
         jScrollPane1.setViewportView(jTextPaneOutput);
 

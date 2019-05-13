@@ -2,7 +2,9 @@ package ale;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,23 +16,44 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
+import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
+import javax.swing.text.Utilities;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 public class Utils {
     
+    private static final Dimension FILE_CHOOSER_DIMENSION = new Dimension(800, 500);
+    private static final String NEO_EXTENSION = "neo";
+    
     public static File openFile(Component frame) {
         JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Ale files", "ale");
+        chooser.setPreferredSize(FILE_CHOOSER_DIMENSION);
+        
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Neo files", NEO_EXTENSION);
         chooser.setFileFilter(filter);
         
         int returnValue = chooser.showOpenDialog(frame);
@@ -67,8 +90,9 @@ public class Utils {
     
     public static File saveFile(Component frame) {
         JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Ale files", "ale");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Neo files", NEO_EXTENSION);
         chooser.setFileFilter(filter);
+        chooser.setPreferredSize(FILE_CHOOSER_DIMENSION);
         
         int result = chooser.showSaveDialog(frame);
         if (result != JFileChooser.APPROVE_OPTION)
@@ -80,8 +104,9 @@ public class Utils {
     
     public static File saveFile(Component frame, String text) {
         JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Ale files", "ale");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Neo files", NEO_EXTENSION);
         chooser.setFileFilter(filter);
+        chooser.setPreferredSize(FILE_CHOOSER_DIMENSION);
         
         int result = chooser.showSaveDialog(frame);
         if (result != JFileChooser.APPROVE_OPTION)
@@ -118,6 +143,7 @@ public class Utils {
         AttributeSet attributes;
         attributes = style.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, color);
         attributes = style.addAttribute(attributes, StyleConstants.FontFamily, "Courier new");
+        attributes = style.addAttribute(attributes, StyleConstants.FontSize, 16);
         attributes = style.addAttribute(attributes, StyleConstants.Alignment, StyleConstants.ALIGN_LEFT);
 
         int length = textpane.getDocument().getLength();
@@ -144,6 +170,108 @@ public class Utils {
         
         int length = textPane.getDocument().getLength();
         textPane.getStyledDocument().setParagraphAttributes(0, length, attributes, false);
+    }
+    
+    public static void addUndoRedo(JTextComponent component) {
+        String UNDO = "undo";
+        String REDO = "redo";
+        
+        KeyStroke undoKey = KeyStroke.getKeyStroke("control Z");
+        KeyStroke redoKey = KeyStroke.getKeyStroke("control Y");
+        
+        UndoManager manager = new UndoManager();
+        component.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent event) {
+                manager.addEdit(event.getEdit());
+            }
+        });
+        
+        component.getActionMap().put(REDO, new AbstractAction(REDO) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (manager.canRedo())
+                        manager.redo();
+                } catch (CannotRedoException ex) { ex.printStackTrace(); }
+            }
+        });
+        component.getInputMap().put(redoKey, REDO);
+        
+        component.getActionMap().put(UNDO, new AbstractAction(UNDO) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (manager.canUndo())
+                        manager.undo();
+                } catch (CannotUndoException ex) { ex.printStackTrace(); }
+            }
+        });
+        component.getInputMap().put(undoKey, UNDO);
+    }
+    
+    public static int getRandomRangeI(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+    
+    public static int wrap(int value, int min, int max) {
+        if (value < min)
+            return max;
+        if (value > max)
+            return min;
+        return value;
+    }
+    
+    public static JPopupMenu createPopupMenu(String[] items) {
+        JPopupMenu popup = new JPopupMenu();
+        for (String item : items)
+            popup.add(new JMenuItem(item));
+        
+        popup.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+            
+        });
+        
+        return popup;
+    }
+    
+    public static void setPopupMenu(JList list, JPopupMenu popup) {
+        list.setComponentPopupMenu(popup);
+    }
+    
+    public static int getTotalLines(JTextPane textPane) {
+        int totalCharacters = textPane.getText().length(); 
+        int lineCount = (totalCharacters == 0) ? 1 : 0;
+
+        try {
+           int offset = totalCharacters; 
+           while (offset > 0) {
+              offset = Utilities.getRowStart(textPane, offset) - 1;
+              lineCount++;
+           }
+           
+           return lineCount;
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+            return -1;
+        }
+    }
+    
+    public static int getLineCount(JTextPane textPane) {
+        return textPane.getText().split("\n").length;
     }
     
 }

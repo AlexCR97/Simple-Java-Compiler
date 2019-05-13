@@ -8,6 +8,7 @@ import ale.ui.modules.PhasesModule;
 import ale.ui.modules.SourceCodeModule;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,12 @@ public class MainFrame extends javax.swing.JFrame {
         this.sourceCodeModule.setApp(this);
         
         // set listeners
+        this.jMenuItemNewFile.addActionListener(newFileListener);
+        this.jMenuItemOpenFile.addActionListener(openFileListener);
+        this.jMenuItemCloseFile.addActionListener(closeListener);
+        this.jMenuItemSave.addActionListener(saveFileListener);
+        this.jMenuItemExit.addActionListener(exitListener);
+        
         this.jButtonNewFile.addActionListener(newFileListener);
         this.jButtonOpenFile.addActionListener(openFileListener);
         this.jButtonSaveAll.addActionListener(saveFileListener);
@@ -51,6 +58,7 @@ public class MainFrame extends javax.swing.JFrame {
             
             files.put(fileName, file);
             sourceCodeModule.addTab(fileName);
+            explorerModule.addItem(fileName);
         }
     };
     
@@ -70,7 +78,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
             
             files.put(fileName, file);
-            sourceCodeModule.addTab(fileName, fileContent);
+            //sourceCodeModule.addTab(fileName, fileContent);
+            sourceCodeModule.addCodeTab(fileName, fileContent);
             explorerModule.addItem(fileName);
         }
     };
@@ -113,12 +122,20 @@ public class MainFrame extends javax.swing.JFrame {
         }
     };
     
+    private final ActionListener exitListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            MainFrame.this.dispatchEvent(new WindowEvent(MainFrame.this, WindowEvent.WINDOW_CLOSING));
+        }
+    };
+    
     private final ActionListener compileListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (sourceCodeModule.getTabCount() == 0)
                 return;
             
+            phasesModule.clearTokensTable();
             outputModule.output("", OutputModule.OUTPUT_TYPE_PLAIN, true);
             
             String fileName = sourceCodeModule.getCurrentTabName();
@@ -127,15 +144,21 @@ public class MainFrame extends javax.swing.JFrame {
             
             Utils.saveFile(file, fileContent);
             
+            outputModule.outputln(
+                    "Compiling file: " + file.getName(),
+                    OutputModule.OUTPUT_TYPE_PLAIN,
+                    true
+            );
+            
             lexicalAnalysis(file);
         }
     };
     
     private boolean lexicalAnalysis(File file) {
         this.outputModule.outputln(
-                "Performing lexical analysis on file: " + file.getName(),
+                "Performing lexical analysis...",
                 OutputModule.OUTPUT_TYPE_PLAIN,
-                true
+                false
         );
         
         lexer = new Lexer(file.getAbsolutePath());
@@ -191,16 +214,13 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItemNewFile = new javax.swing.JMenuItem();
         jMenuItemOpenFile = new javax.swing.JMenuItem();
         jMenuItemCloseFile = new javax.swing.JMenuItem();
-        jMenuItemCloseAll = new javax.swing.JMenuItem();
         jMenuItemSave = new javax.swing.JMenuItem();
-        jMenuItemSaveAs = new javax.swing.JMenuItem();
-        jMenuItemSaveAll = new javax.swing.JMenuItem();
         jMenuItemSettings = new javax.swing.JMenuItem();
         jMenuItemExit = new javax.swing.JMenuItem();
         jMenuEdit = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItemUndo = new javax.swing.JMenuItem();
+        jMenuItemRedo = new javax.swing.JMenuItem();
+        jMenuItemSearch = new javax.swing.JMenuItem();
         jMenuView = new javax.swing.JMenu();
         jMenuAbout = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -290,30 +310,27 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuFile.setText("File");
 
+        jMenuItemNewFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/new-file.png"))); // NOI18N
         jMenuItemNewFile.setText("New File");
         jMenuFile.add(jMenuItemNewFile);
 
+        jMenuItemOpenFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/open-file.png"))); // NOI18N
         jMenuItemOpenFile.setText("Open File");
         jMenuFile.add(jMenuItemOpenFile);
 
+        jMenuItemCloseFile.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/close.png"))); // NOI18N
         jMenuItemCloseFile.setText("Close File");
         jMenuFile.add(jMenuItemCloseFile);
 
-        jMenuItemCloseAll.setText("Close All");
-        jMenuFile.add(jMenuItemCloseAll);
-
+        jMenuItemSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/save-all.png"))); // NOI18N
         jMenuItemSave.setText("Save");
         jMenuFile.add(jMenuItemSave);
 
-        jMenuItemSaveAs.setText("Save As...");
-        jMenuFile.add(jMenuItemSaveAs);
-
-        jMenuItemSaveAll.setText("Save All");
-        jMenuFile.add(jMenuItemSaveAll);
-
+        jMenuItemSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/settings.png"))); // NOI18N
         jMenuItemSettings.setText("Settings");
         jMenuFile.add(jMenuItemSettings);
 
+        jMenuItemExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/exit.png"))); // NOI18N
         jMenuItemExit.setText("Exit");
         jMenuFile.add(jMenuItemExit);
 
@@ -321,14 +338,17 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuEdit.setText("Edit");
 
-        jMenuItem1.setText("Undo");
-        jMenuEdit.add(jMenuItem1);
+        jMenuItemUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/arrow-undo.png"))); // NOI18N
+        jMenuItemUndo.setText("Undo");
+        jMenuEdit.add(jMenuItemUndo);
 
-        jMenuItem2.setText("Redo");
-        jMenuEdit.add(jMenuItem2);
+        jMenuItemRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/arrow-redo.png"))); // NOI18N
+        jMenuItemRedo.setText("Redo");
+        jMenuEdit.add(jMenuItemRedo);
 
-        jMenuItem3.setText("Search");
-        jMenuEdit.add(jMenuItem3);
+        jMenuItemSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ale/assets/search.png"))); // NOI18N
+        jMenuItemSearch.setText("Search");
+        jMenuEdit.add(jMenuItemSearch);
 
         jMenuBar1.add(jMenuEdit);
 
@@ -365,21 +385,18 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jMenuEdit;
     private javax.swing.JMenu jMenuFile;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItemCloseAll;
     private javax.swing.JMenuItem jMenuItemCloseFile;
     private javax.swing.JMenuItem jMenuItemExit;
     private javax.swing.JMenuItem jMenuItemNewFile;
     private javax.swing.JMenuItem jMenuItemOpenFile;
+    private javax.swing.JMenuItem jMenuItemRedo;
     private javax.swing.JMenuItem jMenuItemSave;
-    private javax.swing.JMenuItem jMenuItemSaveAll;
-    private javax.swing.JMenuItem jMenuItemSaveAs;
+    private javax.swing.JMenuItem jMenuItemSearch;
     private javax.swing.JMenuItem jMenuItemSettings;
+    private javax.swing.JMenuItem jMenuItemUndo;
     private javax.swing.JMenu jMenuView;
     private javax.swing.JPanel jPanelContainer;
     private javax.swing.JPanel jPanelModules;
