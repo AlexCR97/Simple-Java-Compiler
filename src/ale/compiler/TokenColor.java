@@ -29,7 +29,7 @@ public class TokenColor {
     static {
         COLORS.put(Token.COMMENT.name(), COMMENT);
         
-        COLORS.put(Token.PREPROCESOR_IMPORT.name(), PREPROCESOR);
+        COLORS.put(Token.IMPORT.name(), PREPROCESOR);
         
         COLORS.put(Token.RESERVED_WORD_CONST.name(), RESERVED_WORD);
         COLORS.put(Token.RESERVED_WORD_NAMESPACE.name(), RESERVED_WORD);

@@ -17,13 +17,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.PopupMenuEvent;
@@ -32,14 +34,13 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
-import javax.swing.text.Utilities;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
@@ -154,14 +155,14 @@ public class Utils {
     }
     
     public static void setTabSize(JTextPane textPane, int charactersPerTab) {
-        FontMetrics fm = textPane.getFontMetrics(textPane.getFont());
-        int charWidth = fm.charWidth(' ');
+        FontMetrics metrics = textPane.getFontMetrics(textPane.getFont());
+        int charWidth = metrics.charWidth(' ');
         int tabWidth = charWidth * charactersPerTab;
 
         TabStop[] tabs = new TabStop[5];
         for (int i = 0; i < tabs.length; i++) {
             int tab = i + 1;
-            tabs[i] = new TabStop( tab * tabWidth );
+            tabs[i] = new TabStop(tab * tabWidth);
         }
 
         TabSet tabSet = new TabSet(tabs);
@@ -248,30 +249,25 @@ public class Utils {
         return popup;
     }
     
-    public static void setPopupMenu(JList list, JPopupMenu popup) {
-        list.setComponentPopupMenu(popup);
-    }
-    
-    public static int getTotalLines(JTextPane textPane) {
-        int totalCharacters = textPane.getText().length(); 
-        int lineCount = (totalCharacters == 0) ? 1 : 0;
-
-        try {
-           int offset = totalCharacters; 
-           while (offset > 0) {
-              offset = Utilities.getRowStart(textPane, offset) - 1;
-              lineCount++;
-           }
-           
-           return lineCount;
-        } catch (BadLocationException ex) {
-            ex.printStackTrace();
-            return -1;
-        }
-    }
-    
     public static int getLineCount(JTextPane textPane) {
-        return textPane.getText().split("\n").length;
+        Document doc = textPane.getDocument();
+        int lineCount = new JTextArea(doc).getLineCount();
+        return lineCount;
+    }
+    
+    public static boolean regexValidate(String regex, String input) {
+        Pattern pattern = Pattern.compile("^" + regex);
+        Matcher matcher = pattern.matcher(input);
+        
+        System.out.printf("Checking if input '%s' matches regex '%s'...\n", input, regex);
+        boolean success = matcher.matches();
+        
+        if (success)
+            System.out.println("Match! :D");
+        else
+            System.out.println("No match :(");
+        
+        return success;
     }
     
 }

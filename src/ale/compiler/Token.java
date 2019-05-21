@@ -7,7 +7,8 @@ public enum Token {
     
     COMMENT("\\/\\*[\\s\\S]*?\\*\\/"),
     
-    PREPROCESOR_IMPORT("@[a-z]+(\\/[a-z]+)*"),
+    //IMPORT("@[a-z]+(\\/[a-z]+)*"),
+    IMPORT("@[a-z]+(::[a-z]+)*"),
     
     RESERVED_WORD_NAMESPACE("namespace\\b"),
     RESERVED_WORD_VOID("void\\b"),
@@ -40,6 +41,14 @@ public enum Token {
     LOGIC_OPERATOR_OR("or\\b"),
     LOGIC_OPERATOR_NOT("not\\b"),
     
+    MATH_OPERATOR_ADD("+=\\b"),
+    MATH_OPERATOR_SUB("-=\\b"),
+    MATH_OPERATOR_MUL("*=\\b"),
+    MATH_OPERATOR_DIV("/=\\b"),
+    MATH_OPERATOR_MOD("%=\\b"),
+    MATH_OPERATOR_POW("^=\\b"),
+    MATH_OPERATOR_ROO("~=\\b"),
+    
     RELATIONAL_OPERATOR_EQUALS("=="),
     RELATIONAL_OPERATOR_DIFFERENT("<>"),
     RELATIONAL_OPERATOR_GREATER_EQUALS(">="),
@@ -65,8 +74,10 @@ public enum Token {
     COMMA("\\,"),
     SEMICOLON("\\;"),
     TYPE_SPECIFIER("\\|"),
-    STRING("\"[^\"]+\""),
+    STRING("\"[^\"]*\""),
+    MAIN("main\\b"),
     NUMBER("\\d+[f|d]?(\\.\\d+[f|d]?)?"),
+    //NAMESPACE("[a-z]+(::[a-z]+)*"),
     IDENTIFIER("([a-zA-Z]|_*[a-zA-Z]){1}[a-zA-Z0-9_]*"),
     ;
     

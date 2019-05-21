@@ -1,23 +1,33 @@
 package ale.ui.modules;
 
 import ale.ui.frames.MainFrame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.DefaultListModel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 public class ExplorerModule extends javax.swing.JPanel {
 
+    private JPopupMenu popup;
     private MainFrame app;
     
     public ExplorerModule() {
         initComponents();
         
+        // create popup menu
+        popup = new JPopupMenu();
+        JMenuItem menuItemClose = new JMenuItem("Close");
+        menuItemClose.addActionListener(jMenuItemListener);
+        popup.add(menuItemClose);
+        popup.add(new JMenuItem("Cancel"));
+        
         // init list
         this.jListItems.setModel(new DefaultListModel<>());
-        
-        // init listeners
         this.jListItems.addMouseListener(jListItemsListener);
     }
 
@@ -50,11 +60,24 @@ public class ExplorerModule extends javax.swing.JPanel {
                 if (jListItems.getSelectedIndex() != -1) {
                     String selectedItem = jListItems.getSelectedValue();
                     app.getSourceCodeModule().changeTab(selectedItem);
-                    //int selectedIndex = jListItems.locationToIndex(e.getPoint());
-                    //System.out.println("You double clicked item " + jListItems.getSelectedValue());
-                    //removeSelectedItem();
                 }
             }
+            
+            if (SwingUtilities.isRightMouseButton(e)) {
+                int index = jListItems.locationToIndex(e.getPoint());
+                jListItems.setSelectedIndex(index);
+                popup.show(jListItems, e.getX(), e.getY());
+            }
+            
+        }
+
+    };
+    
+    private final ActionListener jMenuItemListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String tabName = removeSelectedItem();
+            app.getSourceCodeModule().closeTab(tabName);
         }
     };
     

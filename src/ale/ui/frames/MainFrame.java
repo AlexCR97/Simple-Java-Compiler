@@ -78,8 +78,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             
             files.put(fileName, file);
-            //sourceCodeModule.addTab(fileName, fileContent);
-            sourceCodeModule.addCodeTab(fileName, fileContent);
+            sourceCodeModule.addTab(fileName, fileContent);
             explorerModule.addItem(fileName);
         }
     };

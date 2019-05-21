@@ -12,7 +12,7 @@ public class StaticContextFreeGrammar {
     static {
         GRAMMAR.put("<s>", new String[][] {
             {"There was once", "<a>", "<b>"},
-            //"<a> <b>".split(" "),
+            //"There was once,<a>,<b>".split(","),
         });
         GRAMMAR.put("<a>", new String[][] {
             {"the"},
