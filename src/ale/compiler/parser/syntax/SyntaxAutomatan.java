@@ -6,10 +6,11 @@ import java.util.Map;
 
 public abstract class SyntaxAutomatan {
     
-    public enum STATE {
-        INVALID_TOKEN,
-        VALID_TOKEN,
-        DERIVATION
+    public static enum Condition {
+        INVALID_SYNTAX,
+        VALID_SYNTAX,
+        DERIVATION,
+        ON_FINAL_STATE,
     }
     
     protected String initialState;
@@ -17,7 +18,7 @@ public abstract class SyntaxAutomatan {
     protected List<String> finalStates;
     protected Map<String, Map<String, String>> transitions = new LinkedHashMap<>();
 
-    private STATE state = STATE.VALID_TOKEN;
+    private Condition condition = Condition.VALID_SYNTAX;
     
     public SyntaxAutomatan() {
         init();
@@ -37,11 +38,7 @@ public abstract class SyntaxAutomatan {
         transitions.get(from).put(symbol, to);
     }
     
-    public boolean isOnFinalState() {
-        return finalStates.contains(currentState);
-    }
-    
-    public boolean validateStep(String word) {
+    public void validateStep(String word) {
         System.out.println("STEP VALIDATION on word: " + word);
         
         if (currentState == null)
@@ -49,66 +46,43 @@ public abstract class SyntaxAutomatan {
         
         System.out.println("Current state: " + currentState);
         
-        if (isOnFinalState()) {
-            System.out.println("Already on final state!");
-            System.out.println("-------------------------------------------------");
-            return true;
-        }
-        
         String match = getMatchingTransition(currentState, word);
         
         if (match == null) {
             System.out.println("Could not find transition with word '" + word + "' from state '" + currentState + "' :(");
             System.out.println("Word validation is: FALSE");
             System.out.println("-------------------------------------------------");
-            return false;
+            condition = Condition.INVALID_SYNTAX;
+            return;
         }
         
         System.out.println("Found transition with word '" + word + "' from state '" + currentState + "' :D");
         currentState = transitions.get(currentState).get(match);
+        
         System.out.println("New state is : " + currentState);
         System.out.println("Word validation is: TRUE");
         System.out.println("-------------------------------------------------");
         
-        return true;
+        if (isOnFinalState())
+            condition = Condition.ON_FINAL_STATE;
+        else
+            condition = Condition.VALID_SYNTAX;
     }
     
-    // GOOD ONE
-    /*public boolean validateAll(List<String> sentence) {
-        System.out.println("Validating sentence: '" + sentence + "'");
-        currentState = initialState;
+    public void validateAll(List<String> sentence) {
+        reset();
         
-        for (String word : sentence) {
-            String match = getMatchingTransition(currentState, word);
-            
-            if (match == null) {
-                System.out.println("Could not find transition with '" + word + "' from '" + currentState + "'");
-                System.out.println("Sentence validation is: FALSE");
-                System.out.println("-------------------------------------------------");
-                return false;
-            }
-            
-            currentState = transitions.get(currentState).get(match);
-        }
-        
-        boolean success = finalStates.contains(currentState);
-        if (success) {
-            System.out.println("Sentence validation is: TRUE");
-            System.out.println("-------------------------------------------------");
-        } else {
-            System.out.println("Sentence validation is: FALSE");
-            System.out.println("-------------------------------------------------");
-        }
-        
-        return success;
-    }*/
-    
-    public boolean validateAll(List<String> sentence) {
         System.out.println("COMPLETE VALIDATION on: " + sentence);
         
         for (String word : sentence) {
-            if (!validateStep(word))
-                break;
+            validateStep(word);
+            
+            if (condition == Condition.INVALID_SYNTAX) {
+                System.out.println("Encountered invalid syntax :(");
+                System.out.println("Sentence validation is: FALSE");
+                System.out.println("-------------------------------------------------");
+                return;
+            }
         }
         
         boolean success = isOnFinalState();
@@ -120,8 +94,10 @@ public abstract class SyntaxAutomatan {
             System.out.println("Sentence validation is: FALSE");
             System.out.println("-------------------------------------------------");
         }
-        
-        return success;
+    }
+    
+    public Condition getCondition() {
+        return condition;
     }
     
     private String getMatchingTransition(String state, String word) {
@@ -138,8 +114,18 @@ public abstract class SyntaxAutomatan {
         return null;
     }
     
+    public boolean isOnFinalState() {
+        return finalStates.contains(currentState);
+    }
+    
     private boolean isTag(String word) {
         return word.charAt(0) == '<' && word.charAt(word.length() - 1) == '>';
+    }
+    
+    public void reset() {
+        System.out.println("Just reset automaton!");
+        currentState = null;
+        condition = Condition.VALID_SYNTAX;
     }
     
     @Override

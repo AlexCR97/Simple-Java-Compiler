@@ -18,8 +18,11 @@ public class FunctionCallSyntaxAutomatan extends SyntaxAutomatan {
         addTransition("3", Token.IDENTIFIER.toString(), "5");
         addTransition("3", Token.NUMBER.toString(), "5");
         addTransition("3", Token.STRING.toString(), "5");
-        addTransition("5", Token.COMMA.toString(), "3");
         addTransition("5", Token.DELIMITER_PARENTHESIS_CLOSE.toString(), "4");
+        addTransition("5", Token.COMMA.toString(), "6");
+        addTransition("6", Token.IDENTIFIER.toString(), "5");
+        addTransition("6", Token.NUMBER.toString(), "5");
+        addTransition("6", Token.STRING.toString(), "5");
         
         //addTransition("", Token.toString(), "");
     }

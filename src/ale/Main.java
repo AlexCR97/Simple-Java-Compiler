@@ -7,13 +7,10 @@ import ale.compiler.parser.syntax.FunctionCallSyntaxAutomatan;
 import ale.compiler.parser.syntax.IfSyntaxAutomatan;
 import ale.compiler.parser.syntax.RelationalOperationSyntaxAutomatan;
 import ale.compiler.parser.syntax.SwitchSyntaxAutomatan;
+import ale.compiler.parser.syntax.SyntaxAutomatan;
 import ale.compiler.parser.syntax.VariableDynamicDeclarationSyntaxAutomatan;
 import ale.compiler.parser.syntax.VariableStaticDeclarationSyntaxAutomatan;
 import ale.compiler.parser.syntax.WhileSyntaxAutomatan;
-import ale.structures.Automatan;
-import ale.structures.CFG;
-import ale.structures.SyntaxAutomatan;
-import ale.structures.SyntaxTree;
 import ale.ui.frames.MainFrame;
 import ale.ui.frames.SplashFrame;
 import java.util.Arrays;
@@ -41,9 +38,7 @@ public class Main {
         
         //openSplashFrame();
         //openMainFrame();
-        //mainCFG();
-        //mainAutomatan();
-        //mainSyntaxAutomatan();
+        
         //mainSyntaxAutomatanStaticVars();
         //mainSyntaxAutomatanDynamicVars();
         //mainSyntaxAutomatanConst();
@@ -78,81 +73,6 @@ public class Main {
         
         splash.setVisible(false);
         openMainFrame();
-    }
-    
-    public static void mainCFG() {
-        CFG cfg = new CFG();
-        //[if, var5, >, var4, {, var5, =, 9, ;, }]
-        cfg.setExpansion(Arrays.asList("if", "var5", ">", "10", "{", "var5", "=", "0", ";", "}"));
-        System.out.println(cfg.getExpansion());
-        
-        /*for (int i = 0; i < 10; i++) {
-            cfg.expand();
-            System.out.println(cfg.getExpansion());
-        }
-        System.out.println("");*/
-        
-        SyntaxTree tree = new SyntaxTree();
-        for (int i = 0; i < 10; i++) {
-            tree.fromGrammar(cfg);
-            tree.traversePre();
-        }
-        System.out.println("");
-        
-        // if var5 == 5 { var5 = var1 ; }
-    }
-    
-    public static void mainAutomatan() {
-        List<String> states = Arrays.asList("q0", "q1", "a2");
-        List<String> alphabet = Arrays.asList("0", "1");
-        String initialState = "q0";
-        List<String> finalStates = Arrays.asList("q2");
-        
-        Automatan a = new Automatan(states, alphabet, initialState, finalStates);
-        
-        a.addTransition("q0", "0", "q1");
-        a.addTransition("q0", "1", "q0");
-        a.addTransition("q1", "0", "q2");
-        a.addTransition("q1", "1", "q2");
-        a.addTransition("q2", "0", "q2");
-        a.addTransition("q2", "1", "q2");
-        
-        System.out.println(a);
-        System.out.println();
-        
-        System.out.println(a.validate("11010"));
-        System.out.println(a.validate("10"));
-        System.out.println(a.validate("01"));
-        System.out.println(a.validate("11"));
-    }
-    
-    public static void mainSyntaxAutomatan() {
-        List<String> states = Arrays.asList("q0", "q1", "q2", "q3", "q4", "q5");
-        List<String> alphabet = Arrays.asList("<tipo-de-dato>", "<variable>", "<asignador>", "<fin-de-linea>", "<numero>", "<cadena>", "<caracter>");
-        String initialState = "q0";
-        List<String> finalStates = Arrays.asList("q4");
-        
-        SyntaxAutomatan a = new SyntaxAutomatan(states, alphabet, initialState, finalStates);
-        a.addTransition("q0", "<tipo-de-dato>", "q1");
-        a.addTransition("q1", "<variable>", "q2");
-        a.addTransition("q2", "<asignador>", "q3");
-        a.addTransition("q2", "<fin-de-linea>", "q4");
-        a.addTransition("q3", "<numero>", "q5");
-        a.addTransition("q3", "<cadena>", "q5");
-        a.addTransition("q3", "<caracter>", "q5");
-        a.addTransition("q5", "<fin-de-linea>", "q4");
-        
-        System.out.println(a);
-        
-        a.validate("<tipo-de-dato> <variable> <fin-de-linea>");
-        a.validate("<tipo-de-dato> <variable> <asignador> <numero> <fin-de-linea>");
-        a.validate("<tipo-de-dato> <variable> <asignador> <cadena> <fin-de-linea>");
-        a.validate("<tipo-de-dato> <variable> <asignador> <caracter> <fin-de-linea>");
-        
-        a.validate("<tipo-de-dato> <variable>");
-        a.validate("<variable> <asignador> <numero> <fin-de-linea>");
-        a.validate("<tipo-de-dato> <variable> <asignador> <cadena>");
-        a.validate("<tipo-de-dato> <variable> <asignador> <fin-de-linea>");
     }
     
     public static void mainSyntaxAutomatanStaticVars() {
@@ -203,33 +123,38 @@ public class Main {
         /* not id and id < 20 or b == 10*/
         /* not id and id and id or id == 10 */
         
-        //a.validate(ale.Utils.toStringList("a > b", " "));
-        //a.validate(ale.Utils.toStringList("a > b and b < c", " "));
-        a.validateAll(ale.Utils.toStringList("a > b and not exhausted", " "));
-        //a.validate(ale.Utils.toStringList("a > b and exhausted", " "));
-        //a.validate(ale.Utils.toStringList("b == 10 and not c", " "));
-        //a.validate(ale.Utils.toStringList("done or a <> b", " "));
-        //a.validate(ale.Utils.toStringList("not done and a >= 10", " "));
-        //a.validate(ale.Utils.toStringList("not id > b", " "));
-        //a.validate(ale.Utils.toStringList("not id and id and id", " "));
-        //a.validate(ale.Utils.toStringList("not id and id < 20 or b == 10", " "));
-        //a.validate(ale.Utils.toStringList("not id and id and id or id == 10", " "));
+        //a.validateAll(ale.Utils.toStringList("a > b", " "));
+        //a.validateAll(ale.Utils.toStringList("a > b and b < c", " "));
+        //a.validateAll(ale.Utils.toStringList("a > b and not exhausted", " "));
+        //a.validateAll(ale.Utils.toStringList("a > b and exhausted", " "));
+        //a.validateAll(ale.Utils.toStringList("b == 10 and not c", " "));
+        //a.validateAll(ale.Utils.toStringList("done or a <> b", " "));
+        //a.validateAll(ale.Utils.toStringList("not done and a >= 10", " "));
+        //a.validateAll(ale.Utils.toStringList("not id > b", " "));
+        //a.validateAll(ale.Utils.toStringList("not id and id and id", " "));
+        a.validateAll(ale.Utils.toStringList("not id and num < 20 or b == 10", " "));
+        //a.validateAll(ale.Utils.toStringList("not id and id and id or id == 10", " "));
+        
+        //a.validateAll(ale.Utils.toStringList("not not not", " "));
+        //a.validateAll(ale.Utils.toStringList("not id and <> a ==", " "));
+        //a.validateAll(ale.Utils.toStringList("id and num < 20 or b ==", " "));
+        //a.validateAll(ale.Utils.toStringList("id and num < or b == a", " "));
     }
     
     public static void mainSyntaxAutomatanIf() {
         IfSyntaxAutomatan a = new IfSyntaxAutomatan();
         System.out.println(a);
         
-        //a.validate(ale.Utils.toStringList("if ( <relational-operation> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("if ( <relational-operation> ) { <statements> } else { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("if ( <relational-operation> ) { <statements> } else if ( <relational-operation> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("if ( <relational-operation> ) { <statements> } else if ( <relational-operation> ) { <statements> } else if ( <relational-operation> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("if ( <relational-operation> ) { <statements> } else if ( <relational-operation> ) { <statements> } else if ( <relational-operation> ) { <statements> } else if ( <relational-operation> ) { <statements> }", " "));
+        //a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statement-list> } else { <statement-list> }", " "));
+        a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statement-list> } else if ( <relational-operation> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statement-list> } else if ( <relational-operation> ) { <statement-list> } else if ( <relational-operation> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statement-list> } else if ( <relational-operation> ) { <statement-list> } else if ( <relational-operation> ) { <statement-list> } else if ( <relational-operation> ) { <statement-list> }", " "));
         
-        a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statements> } else", " "));
-        //a.validate(ale.Utils.toStringList("if ( <relational-operation> ) { <statements> } else { <statements> } else if ( <relational-operation> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("else ( <relational-operation> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("else if ( <relational-operation> ) { <statements> }", " "));
+        //a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statement-list> } else", " "));
+        //a.validateAll(ale.Utils.toStringList("if ( <relational-operation> ) { <statement-list> } else { <statement-list> } else if ( <relational-operation> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("else ( <relational-operation> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("else if ( <relational-operation> ) { <statement-list> }", " "));
     }
     
     public static void mainSyntaxAutomatanSwitch() {
@@ -273,19 +198,23 @@ public class Main {
         WhileSyntaxAutomatan a = new WhileSyntaxAutomatan();
         System.out.println(a);
         
-        a.validateAll(ale.Utils.toStringList("while ( <relational-operation> ) { <statements> }", " "));
-        a.validateAll(ale.Utils.toStringList("while ( ) { <statements> }", " "));
+        a.validateAll(ale.Utils.toStringList("while ( <relational-operation> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("while ( ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("while ( <relational-operation> ) { }", " "));
+        //a.validateAll(ale.Utils.toStringList("while ( <relational-operation> ) {{ <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("while <relational-operation> { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("( <relational-operation> ) { <statement-list> }", " "));
     }
     
     public static void mainSyntaxAutomatanFor() {
         ForSyntaxAutomatan a = new ForSyntaxAutomatan();
         System.out.println(a);
         
-        //a.validate(ale.Utils.toStringList("for ( <statement> ; <relational-operation> ; <statement> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("for ( ; <relational-operation> ; <statement> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("for ( <statement> ; ; <statement> ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("for ( <statement> ; <relational-operation> ; ; ) { <statements> }", " "));
-        //a.validate(ale.Utils.toStringList("for ( ; ; ; ) { <statements> }", " "));
+        a.validateAll(ale.Utils.toStringList("for ( <statement> ; <relational-operation> ; <statement> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("for ( ; <relational-operation> ; <statement> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("for ( <statement> ; ; <statement> ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("for ( <statement> ; <relational-operation> ; ) { <statement-list> }", " "));
+        //a.validateAll(ale.Utils.toStringList("for ( ; ; ; ) { <statement-list> }", " "));
     }
     
     public static void mainSyntaxAutomatanFunctionCall() {
@@ -303,13 +232,19 @@ public class Main {
         console::printf("Your full name is %s %s\n", firstName, lastName)
         */
         
-        //a.validate(ale.Utils.toStringList("foo ( )", " "));
-        //a.validate(ale.Utils.toStringList("lorem . ipsum ( )", " "));
-        //a.validate(ale.Utils.toStringList("lorem . ipsum ( a )", " "));
-        //a.validate(ale.Utils.toStringList("lorem . ipsum ( a , 10 , \"start\" )", " "));
-        //a.validate(ale.Utils.toStringList("console :: println ( )", " "));
-        //a.validate(Arrays.asList("console", "::", "println", "(", "\"Hello, Neo!\"", ")"));
+        //a.validateAll(ale.Utils.toStringList("foo ( )", " "));
+        //a.validateAll(ale.Utils.toStringList("lorem . ipsum ( )", " "));
+        //a.validateAll(ale.Utils.toStringList("lorem . ipsum ( a )", " "));
+        //a.validateAll(ale.Utils.toStringList("lorem . ipsum ( a , 10 , \"start\" )", " "));
+        //a.validateAll(ale.Utils.toStringList("console :: println ( )", " "));
+        //a.validateAll(Arrays.asList("console", "::", "println", "(", "\"Hello, Neo!\"", ")"));
         a.validateAll(ale.Utils.toStringList("console :: printf ( \"Your-full-name-is-%s-%s\\n\" , firstName , lastName )", " "));
+        
+        //a.validateAll(ale.Utils.toStringList("( )", " "));
+        //a.validateAll(ale.Utils.toStringList("lorem ipsum ( )", " "));
+        //a.validateAll(ale.Utils.toStringList("lorem . ipsum ( a", " "));
+        //a.validateAll(ale.Utils.toStringList("lorem . ipsum ( a , 10 , )", " "));
+        //a.validateAll(ale.Utils.toStringList("console :: :: println ( )", " "));
     }
     
     public static void mainStepValidation() {
@@ -317,26 +252,36 @@ public class Main {
         //List<String> tokens = ale.Utils.toStringList("lorem . ipsum ( a )", " ");
         List<String> tokens = ale.Utils.toStringList("foo ( , , )", " ");
         
-        int i = 0;
-        while (a.validateStep(tokens.get(i))) {
-            i++;
-        }
+        tokens.forEach((word) -> {
+            System.out.println("AUTOMATON'S CONDITION is " + a.getCondition().name());
+            a.validateStep(word);
+        });
         
+        System.out.println("Final CONDITION was: " + a.getCondition().name());
+        System.out.println("On final state: " + (a.getCondition() == SyntaxAutomatan.Condition.ON_FINAL_STATE));
     }
     
     public static void mainCompleteValidation() {
         FunctionCallSyntaxAutomatan a = new FunctionCallSyntaxAutomatan();
         List<String> tokens = ale.Utils.toStringList("lorem . ipsum ( a )", " ");
-        //List<String> tokens = ale.Utils.toStringList("( a )", " ");
+        //List<String> tokens = ale.Utils.toStringList("foo ( a", " ");
+        //List<String> tokens = ale.Utils.toStringList("foo ( , , )", " ");
         
         a.validateAll(tokens);
+        
+        if (a.isOnFinalState())
+            System.out.println("ON FINAL STATE");
+        else
+            System.out.println("NOT ON FINAL STATE");
+        
+        System.out.println("Condition: " + a.getCondition().name());
     }
     
     public static void mainParser() {
         List<String> tokens = ale.Utils.toStringList("var x = 10 ;", " ");
         Parser parser = new Parser(tokens);
-        parser.parse();
-        //parser.parse("<dynamic-declaration>");
+        //parser.parse();
+        parser.parse("<dynamic-declaration>");
     }
     
 }

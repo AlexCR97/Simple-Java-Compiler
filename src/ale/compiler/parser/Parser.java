@@ -4,8 +4,10 @@ import ale.compiler.parser.syntax.StatementSyntaxAutomatan;
 import ale.compiler.parser.syntax.SyntaxAutomatan;
 import ale.compiler.parser.syntax.VariableDynamicDeclarationSyntaxAutomatan;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class Parser {
     
@@ -15,46 +17,55 @@ public class Parser {
         AUTOMATONS.put("<dynamic-declaration>", new VariableDynamicDeclarationSyntaxAutomatan());
     }
     
-    private List<String> tokens;
+    private Queue<String> tokensQueue;
+    private String startTag = "<statement>";
     
     public Parser(List<String> tokens) {
-        this.tokens = tokens;
+        tokensQueue = new LinkedList<>(tokens);
     }
     
     public boolean parse() {
-        System.out.println("PARSING " + tokens);
-        return parse("<statement>");
-    }
-    
-    public boolean parse(String tag) {
+        System.out.println("PARSING " + tokensQueue);
         
-        SyntaxAutomatan currentAutomatan = AUTOMATONS.get(tag);
+        boolean success = parse(startTag);
         
-        boolean success = currentAutomatan.validateAll(tokens);
-        
-        if (success) {
-            System.out.println("Parse SUCCESSFUL!");
-            System.out.println("---------------------------------------------");
-        } else {
-            System.out.println("Parse FAILED!");
-            System.out.println("---------------------------------------------");
-        }
+        if (success)
+            System.out.println("Parsing was SUCCESSFUL! :D");
+        else
+            System.out.println("Parsing FAILED! :(");
         
         return success;
     }
     
-    public boolean parse2() {
-        return parse2("<statement>");
-    }
-    
-    public boolean parse2(String tag) {
-        SyntaxAutomatan currentAutomatan = AUTOMATONS.get(tag);
+    public boolean parse(String tag) {
+        if (!AUTOMATONS.containsKey(tag)) {
+            System.out.println("Could not find syntax automaton with tag '" + tag + "'");
+            return false;
+        }
         
-        while (!tokens.isEmpty()) {
-            String currentToken = tokens.get(0);
-            tokens.remove(0);
+        SyntaxAutomatan a = AUTOMATONS.get(tag);
+        
+        while (!tokensQueue.isEmpty()) {
+            String currentToken = tokensQueue.peek();
+            System.out.println("Current token: " + currentToken);
             
+            a.validateStep(currentToken);
             
+            switch (a.getCondition()) {
+                case DERIVATION: {
+                    
+                    break;
+                }
+                
+                case INVALID_SYNTAX: {
+                    return false;
+                }
+                
+                case VALID_SYNTAX: {
+                    tokensQueue.poll();
+                    break;
+                }
+            }
         }
         
         return true;
