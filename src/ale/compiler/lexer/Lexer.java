@@ -125,6 +125,10 @@ public class Lexer {
         return input.toString();
     }
     
+    public List<String> getTokensList() {
+        return new ArrayList<>(tokensTable.values());
+    }
+    
     public Map<String, String> getTokensTable() {
         return tokensTable;
     }

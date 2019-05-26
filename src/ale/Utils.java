@@ -16,6 +16,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -268,6 +270,11 @@ public class Utils {
             System.out.println("No match :(");
         
         return success;
+    }
+    
+    public static List<String> toStringList(String input, String separator) {
+        String[] words = input.split(separator);
+        return Arrays.asList(words);
     }
     
 }

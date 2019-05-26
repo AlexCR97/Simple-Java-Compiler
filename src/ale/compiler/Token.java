@@ -16,10 +16,14 @@ public enum Token {
     RESERVED_WORD_VAR("var\\b"),
     RESERVED_WORD_CONST("const\\b"),
     RESERVED_WORD_NULL("null\\b"),
+    RESERVED_WORD_TRUE("true\\b"),
+    RESERVED_WORD_FALSE("false\\b"),
     
     FLOW_CONTROLLER_IF("if\\b"),
     FLOW_CONTROLLER_ELSE("else\\b"),
     FLOW_CONTROLLER_SWITCH("switch\\b"),
+    FLOW_CONTROLLER_CASE("case\\b"),
+    FLOW_CONTROLLER_DEFAULT("default\\b"),
     FLOW_CONTROLLER_WHILE("while\\b"),
     FLOW_CONTROLLER_FOR("for\\b"),
     FLOW_CONTROLLER_ITERATE("iterate\\b"),
@@ -77,7 +81,6 @@ public enum Token {
     STRING("\"[^\"]*\""),
     MAIN("main\\b"),
     NUMBER("\\d+[f|d]?(\\.\\d+[f|d]?)?"),
-    //NAMESPACE("[a-z]+(::[a-z]+)*"),
     IDENTIFIER("([a-zA-Z]|_*[a-zA-Z]){1}[a-zA-Z0-9_]*"),
     ;
     
