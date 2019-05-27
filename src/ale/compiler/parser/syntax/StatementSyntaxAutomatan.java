@@ -11,8 +11,8 @@ public class StatementSyntaxAutomatan extends SyntaxAutomatan {
         finalStates = Arrays.asList("3");
         
         addTransition("1", "<dynamic-declaration>", "2");
-        addTransition("1", "<static-declaration>", "2");
         addTransition("1", "<const-declaration>", "2");
+        addTransition("1", "<static-declaration>", "2");
         addTransition("1", "<function-call>", "2");
         addTransition("2", Token.SEMICOLON.toString(), "3");
         

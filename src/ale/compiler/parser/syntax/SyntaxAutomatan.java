@@ -1,5 +1,6 @@
 package ale.compiler.parser.syntax;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,13 @@ public abstract class SyntaxAutomatan {
         VALID_SYNTAX,
         DERIVATION,
         ON_FINAL_STATE,
+        ON_ABSOLUTE_FINAL_STATE
     }
     
     protected String initialState;
     protected String currentState;
     protected List<String> finalStates;
+    protected List<String> currentDerivations = new ArrayList<>();
     protected Map<String, Map<String, String>> transitions = new LinkedHashMap<>();
 
     private Condition condition = Condition.VALID_SYNTAX;
@@ -38,8 +41,15 @@ public abstract class SyntaxAutomatan {
         transitions.get(from).put(symbol, to);
     }
     
+    public void forceValidate() {
+        int state = Integer.parseInt(this.currentState) + 1;
+        this.currentState = String.valueOf(state);
+        
+        currentDerivations = new ArrayList<>();
+    }
+    
     public void validateStep(String word) {
-        System.out.println("STEP VALIDATION on word: " + word);
+        System.out.println("STEP VALIDATION on word '" + word + "' from '" + getClass().getSimpleName() + "'");
         
         if (currentState == null)
             currentState = initialState;
@@ -49,6 +59,12 @@ public abstract class SyntaxAutomatan {
         String match = getMatchingTransition(currentState, word);
         
         if (match == null) {
+            
+            if (condition == Condition.DERIVATION) {
+                System.out.println("Found derivations " + currentDerivations);
+                return;
+            }
+            
             System.out.println("Could not find transition with word '" + word + "' from state '" + currentState + "' :(");
             System.out.println("Word validation is: FALSE");
             System.out.println("-------------------------------------------------");
@@ -63,7 +79,9 @@ public abstract class SyntaxAutomatan {
         System.out.println("Word validation is: TRUE");
         System.out.println("-------------------------------------------------");
         
-        if (isOnFinalState())
+        if (isOnAbsoluteFinalState())
+            condition = Condition.ON_ABSOLUTE_FINAL_STATE;
+        else if (isOnFinalState())
             condition = Condition.ON_FINAL_STATE;
         else
             condition = Condition.VALID_SYNTAX;
@@ -100,22 +118,42 @@ public abstract class SyntaxAutomatan {
         return condition;
     }
     
+    public List<String> getLastDerivations() {
+        return currentDerivations;
+    }
+    
     private String getMatchingTransition(String state, String word) {
         System.out.println("Checking if '" + state + "' has any transition matching regex '" + word + "'...");
         
         if (!transitions.containsKey(state))
             return null;
         
+        currentDerivations = new ArrayList<>();
+        
         for (Map.Entry<String, String> i : transitions.get(state).entrySet()) {
-            if (ale.Utils.regexValidate(i.getKey(), word))
+            String transitionString = i.getKey();
+            
+            if (isTag(transitionString)) {
+                currentDerivations.add(transitionString);
+                continue;
+            }
+            
+            if (ale.Utils.regexValidate(transitionString, word))
                 return i.getKey();
         }
+        
+        if (!currentDerivations.isEmpty())
+            condition = Condition.DERIVATION;
         
         return null;
     }
     
     public boolean isOnFinalState() {
         return finalStates.contains(currentState);
+    }
+    
+    public boolean isOnAbsoluteFinalState() {
+        return isOnFinalState() && !transitions.containsKey(currentState);
     }
     
     private boolean isTag(String word) {
@@ -126,6 +164,7 @@ public abstract class SyntaxAutomatan {
         System.out.println("Just reset automaton!");
         currentState = null;
         condition = Condition.VALID_SYNTAX;
+        currentDerivations = new ArrayList<>();
     }
     
     @Override

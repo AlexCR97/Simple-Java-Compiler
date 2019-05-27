@@ -49,8 +49,8 @@ public class Main {
         //mainSyntaxAutomatanFor();
         //mainSyntaxAutomatanFunctionCall();
         //mainStepValidation();
-        //mainCompleteValidation();
-        mainParser();
+        mainCompleteValidation();
+        //mainParser();
     }
     
     public static void openMainFrame() {
@@ -79,33 +79,35 @@ public class Main {
         VariableStaticDeclarationSyntaxAutomatan a = new VariableStaticDeclarationSyntaxAutomatan();
         System.out.println(a);
         
-        a.validateAll(Arrays.asList("int", "number", "=", "10", ";"));
-        a.validateAll(Arrays.asList("string", "message", "=", "\"Hello world\"", ";"));
-        
-        a.validateAll(Arrays.asList("number", "=", "10", ";"));
+        //a.validateAll(Arrays.asList("bool", "flag"));
+        //a.validateAll(Arrays.asList("int", "number", "=", "10"));
         a.validateAll(Arrays.asList("string", "message", "=", "\"Hello world\""));
+        
+        //a.validateAll(Arrays.asList("bool"));
+        //a.validateAll(Arrays.asList("number", "="));
+        //a.validateAll(Arrays.asList("string", "message", "=", "\"Hello world\"", "id"));
     }
     
     public static void mainSyntaxAutomatanDynamicVars() {
         VariableDynamicDeclarationSyntaxAutomatan a = new VariableDynamicDeclarationSyntaxAutomatan();
         System.out.println(a);
         
-        a.validateAll(Arrays.asList("var", "number", "=", "10", ";"));
-        a.validateAll(Arrays.asList("var", "message", "=", "\"Hello world\"", ";"));
+        //a.validateAll(Arrays.asList("var", "number", "=", "10"));
+        //a.validateAll(Arrays.asList("var", "message", "=", "\"Hello world\""));
         
-        a.validateAll(Arrays.asList("var", "=", "10", ";"));
-        a.validateAll(Arrays.asList("var", "message", "=", "\"Hello world\""));
+        //a.validateAll(Arrays.asList("var", "=", "10"));
+        a.validateAll(Arrays.asList("message", "=", "\"Hello world\""));
     }
     
     public static void mainSyntaxAutomatanConst() {
         ConstantDeclarationSyntaxAutomatan a = new ConstantDeclarationSyntaxAutomatan();
         System.out.println(a);
         
-        a.validateAll(Arrays.asList("const", "number", "=", "10", ";"));
-        a.validateAll(Arrays.asList("const", "message", "=", "\"Hello world\"", ";"));
-        
-        a.validateAll(Arrays.asList("const", "=", "10", ";"));
+        //a.validateAll(Arrays.asList("const", "number", "=", "10"));
         a.validateAll(Arrays.asList("const", "message", "=", "\"Hello world\""));
+        
+        //a.validateAll(Arrays.asList("const", "=", "10"));
+        //a.validateAll(Arrays.asList("const", "message", "\"Hello world\""));
     }
     
     public static void mainSyntaxAutomatanRelationalOperations() {
@@ -278,10 +280,22 @@ public class Main {
     }
     
     public static void mainParser() {
-        List<String> tokens = ale.Utils.toStringList("var x = 10 ;", " ");
+        //List<String> tokens = ale.Utils.toStringList("int x ;", " ");
+        List<String> tokens = ale.Utils.toStringList("int x = 10 ;", " ");
+        //List<String> tokens = ale.Utils.toStringList("var name = \"Alejandro-Castillo\" ;", " ");
+        //List<String> tokens = ale.Utils.toStringList("const PI = 3.1516 ;", " ");
+        //List<String> tokens = ale.Utils.toStringList("lorem . ipsum :: foo ( 10 , 20 ) ;", " ");
+        
+        //List<String> tokens = ale.Utils.toStringList("int x = 10", " ");
+        //List<String> tokens = ale.Utils.toStringList("name = \"Alejandro-Castillo\" ;", " ");
+        //List<String> tokens = ale.Utils.toStringList("const PI = 3.1416 const PI = 3.1416 ;", " ");
+        //List<String> tokens = ale.Utils.toStringList("lorem . ipsum :: foo ( , , 20 ) ;", " ");
+        //List<String> tokens = ale.Utils.toStringList("lorem . ipsum :: ( 10 , 20 ) foo ;", " ");
+        
         Parser parser = new Parser(tokens);
-        //parser.parse();
-        parser.parse("<dynamic-declaration>");
+        
+        //parser.parse("<dynamic-declaration>");
+        parser.parse();
     }
     
 }
