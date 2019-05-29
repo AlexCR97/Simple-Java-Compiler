@@ -15,22 +15,22 @@ public class NeoParser {
         System.out.println("Parsing: " + Arrays.asList(tokens));
         
         boolean success = parser.parse(tokens);
-
-        if (success)
-            System.out.println("Parse SUCCESSFUL! :D");
-        else
-            System.out.println("Parse FAILED :(");
-
+        
         Chart[] charts = parser.getCharts();
-        System.out.println("Charts produced by the sentence:");
+        System.out.println("Charts produced by the sentence:\n");
 
         for (int i = 0; i < charts.length; i++)
         {
-            System.out.println("Chart[" + i + "] :");
+            System.out.println("Chart[" + i + "]");
             System.out.println(charts[i].toString());
         }
 
         System.out.println("=============================================================");
+        System.out.println("=============================================================");
+        if (success)
+            System.out.println("Parse SUCCESSFUL! :D");
+        else
+            System.out.println("Parse FAILED :(");
         System.out.println("=============================================================");
         System.out.println("=============================================================");
         

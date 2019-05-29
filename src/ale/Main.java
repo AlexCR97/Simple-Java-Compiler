@@ -3,8 +3,6 @@ package ale;
 import ale.compiler.parser.NeoParser;
 import ale.ui.frames.MainFrame;
 import ale.ui.frames.SplashFrame;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,9 +25,9 @@ public class Main {
         }
         
         //openSplashFrame();
-        //openMainFrame();
+        openMainFrame();
         
-        mainParser();
+        //mainParser();
     }
     
     public static void openMainFrame() {
@@ -57,7 +55,26 @@ public class Main {
     public static void mainParser() {
         NeoParser parser = new NeoParser();
         
-        String[] tokens = new String[] {"if", "(", "var1", ">", "9", ")", "{", "var1", "(", ")", ";", "}"};
+        //String[] tokens = "void main ( ) { int var1 = 0 ; }".split(" ");
+        //String[] tokens = "void main ( ) { var1 ( ) ; }".split(" ");
+        //String[] tokens = "void main ( ) { if ( a > b ) { string x = a ( ) ; } }".split(" ");
+        //String[] tokens = "void main ( ) { if ( a > b ) { if ( b < c ) { string x = a ( ) ; c ( ) ; } } }".split(" ");
+        //String[] tokens = "void main ( ) { var1 ( ) ; a ( ) ; }".split(" ");
+        //String[] tokens = "void main ( ) { }".split(" ");
+        //String[] tokens = "void main ( ) { switch ( a ) { } }".split(" ");
+        //String[] tokens = "void main ( ) { switch ( x ) { case 0 { int x = 1 ; foo ( ) ; } } }".split(" ");
+        //String[] tokens = "void main ( ) { switch ( x ) { case 0 { int x = 1 ; foo ( ) ; } case 1 { lorem . ipsum ( ) ; } } }".split(" ");
+        //String[] tokens = "void main ( ) { switch ( x ) { case 0 { int x = 1 ; foo ( ) ; } case 1 { lorem . ipsum ( ) ; } case 2 { if ( a == b ) { string foo = foo ( ) ; } } } }".split(" ");
+        //String[] tokens = "void main ( ) { while ( a < 9 ) { } }".split(" ");
+        //String[] tokens = "void main ( ) { while ( a < 9 ) { foo ( ) ; x = y ; } }".split(" ");
+        //String[] tokens = "void main ( ) { for ( int i = 0 ; i < 9 ; i = 2 ) { } }".split(" ");
+        //String[] tokens = "void main ( ) { for ( var x = 10 ; x < 1 0 ; x = 1 0 0 ) { for ( var y = 0 ; y < 9 ; y = 1 ) { x = y ; } } }".split(" ");
+        
+        //String[] tokens = "namespace a . foo :: ipsum { void main ( ) { } }".split(" ");
+        //String[] tokens = "a ; namespace a . foo :: ipsum { void main ( ) { } }".split(" ");
+        //String[] tokens = "a :: b ; namespace a . foo :: ipsum { void main ( ) { } }".split(" ");
+        String[] tokens = "a :: b :: c :: d ; namespace a . foo :: ipsum { void main ( ) { } }".split(" ");
+        
         parser.parse(tokens);
     }
     
