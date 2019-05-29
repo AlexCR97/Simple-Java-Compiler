@@ -7,8 +7,8 @@ import java.util.Map;
 
 public abstract class ContextFreeGrammar {
     
-    private final Map<RHS[], String> rules = new HashMap<>();
-    private final List<String> pos = new ArrayList<>();
+    private Map<RHS[], String> rules = new HashMap<>();
+    private List<String> pos = new ArrayList<>();
     
     public ContextFreeGrammar() {
         init();
@@ -18,6 +18,12 @@ public abstract class ContextFreeGrammar {
         initStartRules();
         initProductionRules();
         initPos();
+    }
+    
+    public void resetGrammar() {
+        rules = new HashMap<>();
+        pos = new ArrayList<>();
+        init();
     }
     
     protected abstract void initStartRules();
@@ -103,6 +109,19 @@ public abstract class ContextFreeGrammar {
     
     public void addPos(String pos) {
         this.pos.add(pos);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        
+        rules.forEach((key, value) -> {
+            for (RHS rhs : key)
+                str.append(rhs.toString()).append(", ");
+            str.append(value).append("\n");
+        });
+        
+        return str.toString();
     }
     
 }

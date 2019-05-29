@@ -24,7 +24,7 @@ public class Main {
             ex.printStackTrace();
         }
         
-        //openSplashFrame();
+        openSplashFrame();
         openMainFrame();
         
         //mainParser();

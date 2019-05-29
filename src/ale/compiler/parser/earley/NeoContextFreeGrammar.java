@@ -3,8 +3,8 @@ package ale.compiler.parser.earley;
 import java.util.Arrays;
 import java.util.List;
 
-public class NeoContextFreeGrammar extends ContextFreeGrammar {
-
+public class NeoContextFreeGrammar extends ContextFreeGrammar {    
+    
     @Override
     protected void initStartRules() {
         List<String> rules = Arrays.asList(
@@ -17,8 +17,8 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
     @Override
     protected void initProductionRules() {
         List<String> importListRules = Arrays.asList(
-                "<import> <import-list>",
-                "<import>"
+                "neo :: <import>",
+                "neo :: <import> <import-list>"
         );
         addProductionRules("<import-list>", importListRules);
         
@@ -36,7 +36,6 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
         
         List<String> idNamespaceRules = Arrays.asList(
                 "<id>",
-                "<id> . <id-namespace>",
                 "<id> :: <id-namespace>"
         );
         addProductionRules("<id-namespace>", idNamespaceRules);
@@ -98,34 +97,9 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
         
         addProductionRule("<type>", "int float double char string bool");
         
-        addProductionRule("<id>", "a b c d e f g h i j k l m n o p q r s t u v w x y z var0 var1 var2 var3 var4 var5 var6 var7 var8 var9 foo lorem ipsum");
-
-        List<String> numberRules = Arrays.asList(
-                "<integer>",
-                "<float>",
-                "<double>"
-        );
-        addProductionRules("<number>", numberRules);
+        //addProductionRule("<id>", "a b c d e f g h i j k l m n o p q r s t u v w x y z var0 var1 var2 var3 var4 var5 var6 var7 var8 var9 foo lorem ipsum");
         
-        List<String> integerRules = Arrays.asList(
-                "<digit> <integer>",
-                "<digit>"
-        );
-        addProductionRules("<integer>", integerRules);
-        
-        addProductionRule("<digit>", "0 1 2 3 4 5 6 7 8 9");
-        
-        List<String> floatRules = Arrays.asList(
-                "<integer> f",
-                "<integer> . <integer> f"
-        );
-        addProductionRules("<float>", floatRules);
-        
-        List<String> doubleRules = Arrays.asList(
-                "<integer> d",
-                "<integer> . <integer> d"
-        );
-        addProductionRules("<double>", doubleRules);
+        //addProductionRule("<number>", "0 1 2 3 4 5 6 7 8 9");
         
         List<String> functionCallRules = Arrays.asList(
                 "<id> ( )",
@@ -137,6 +111,10 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
         List<String> ifRules = Arrays.asList(
                 "if ( <condition> ) { }",
                 "if ( <condition> ) { } else { }",
+
+                "if ( <condition> ) { <statement-list> } else { }",
+                "if ( <condition> ) { } else { <statement-list> }",
+                
                 "if ( <condition> ) { <statement-list> }",
                 "if ( <condition> ) { <statement-list> } else { <statement-list> }"
         );
@@ -205,6 +183,7 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
         );
         addProductionRules("<for>", forRules);
         
+        addProductionRule("neo", "neo");
         addProductionRule("namespace", "namespace");
         addProductionRule("void", "void"); addProductionRule("main", "main");
         addProductionRule("var", "var"); addProductionRule("const", "const");
@@ -223,11 +202,10 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
 
     @Override
     protected void initPos() {
-        addPos("<id>");
         addPos("<relational-operator>");
-        addPos("<digit>");
         addPos("<type>");
 
+        addPos("neo");
         addPos("namespace");
         addPos("void"); addPos("main");
         addPos("var"); addPos("const");
