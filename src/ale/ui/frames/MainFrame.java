@@ -1,7 +1,9 @@
 package ale.ui.frames;
 
 import ale.Utils;
-import ale.compiler.lexer.Lexer;
+import ale.compiler.TokenItem;
+import ale.compiler.lexer.NeoLexer;
+import ale.compiler.parser.NeoParser;
 import ale.ui.modules.ExplorerModule;
 import ale.ui.modules.OutputModule;
 import ale.ui.modules.PhasesModule;
@@ -11,13 +13,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainFrame extends javax.swing.JFrame {
 
     private final Map<String, File> files = new HashMap<>();
     
-    private Lexer lexer;
+    private NeoLexer lexer;
+    private NeoParser parser = new NeoParser();
     
     public MainFrame() {
         initComponents();
@@ -78,8 +82,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             
             files.put(fileName, file);
-            //sourceCodeModule.addTab(fileName, fileContent);
-            sourceCodeModule.addCodeTab(fileName, fileContent);
+            sourceCodeModule.addTab(fileName, fileContent);
             explorerModule.addItem(fileName);
         }
     };
@@ -150,7 +153,13 @@ public class MainFrame extends javax.swing.JFrame {
                     true
             );
             
-            lexicalAnalysis(file);
+            boolean success;
+            
+            success = lexicalAnalysis(file);
+            if (!success)
+                return;
+            
+            syntaxAnalysis();
         }
     };
     
@@ -161,9 +170,9 @@ public class MainFrame extends javax.swing.JFrame {
                 false
         );
         
-        lexer = new Lexer(file.getAbsolutePath());
+        lexer = new NeoLexer(file.getAbsolutePath());
         while (lexer.hasNext()) {}
-
+        
         if (!lexer.isSuccessful()) {
             this.outputModule.outputln(
                     "COMPILATION ERROR. Could not complete lexical analysis: " + lexer.getErrorMessage(),
@@ -181,6 +190,45 @@ public class MainFrame extends javax.swing.JFrame {
         
         phasesModule.fillTokensTable(lexer.getTokenItems());
         return true;
+    }
+    
+    private boolean syntaxAnalysis() {
+        this.outputModule.outputln(
+                "\nPerforming syntax analysis...",
+                OutputModule.OUTPUT_TYPE_PLAIN,
+                false
+        );
+        
+        List<TokenItem> tokenItems = lexer.getTokenItems();
+        String[] tokens = new String[tokenItems.size()];
+        
+        for (int i = 0; i < tokens.length; i++)
+            tokens[i] = tokenItems.get(i).lexeme;
+        
+        // ADD DYNAMIC RULES ///////////////////////////////////////////////////
+        parser.grammarResetGrammar();
+        parser.grammarAddDynamicRule("<id>", lexer.getTokenIdentifiers());
+        parser.grammarAddDynamicRule("<number>", lexer.getTokenNumbers());
+        parser.grammarAddDynamicRule("<string>", lexer.getTokenStrings());
+        ////////////////////////////////////////////////////////////////////////
+        
+        boolean success = parser.parse(tokens);
+        
+        if (success) {
+            this.outputModule.outputln(
+                    "Syntax analysis successful!",
+                    OutputModule.OUTPUT_TYPE_SUCCESS,
+                    false
+            );
+        } else {
+            this.outputModule.outputln(
+                    "COMPILATION ERROR. Could not complete syntax analysis",
+                    OutputModule.OUTPUT_TYPE_ERROR,
+                    false
+            );
+        }
+        
+        return success;
     }
     
     @SuppressWarnings("unchecked")

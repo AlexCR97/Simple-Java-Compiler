@@ -7,7 +7,8 @@ public enum Token {
     
     COMMENT("\\/\\*[\\s\\S]*?\\*\\/"),
     
-    PREPROCESOR_IMPORT("@[a-z]+(\\/[a-z]+)*"),
+    //IMPORT("@[a-z]+(\\/[a-z]+)*"),
+    IMPORT("@[a-z]+(::[a-z]+)*"),
     
     RESERVED_WORD_NAMESPACE("namespace\\b"),
     RESERVED_WORD_VOID("void\\b"),
@@ -15,10 +16,14 @@ public enum Token {
     RESERVED_WORD_VAR("var\\b"),
     RESERVED_WORD_CONST("const\\b"),
     RESERVED_WORD_NULL("null\\b"),
+    RESERVED_WORD_TRUE("true\\b"),
+    RESERVED_WORD_FALSE("false\\b"),
     
     FLOW_CONTROLLER_IF("if\\b"),
     FLOW_CONTROLLER_ELSE("else\\b"),
-    FLOW_CONTROLLER_SWITCH("switch\\b"),
+    FLOW_CONTROLLER_WHEN("when\\b"),
+    FLOW_CONTROLLER_MATCHES("matches\\b"),
+    FLOW_CONTROLLER_DEFAULT("default\\b"),
     FLOW_CONTROLLER_WHILE("while\\b"),
     FLOW_CONTROLLER_FOR("for\\b"),
     FLOW_CONTROLLER_ITERATE("iterate\\b"),
@@ -39,6 +44,14 @@ public enum Token {
     LOGIC_OPERATOR_AND("and\\b"),
     LOGIC_OPERATOR_OR("or\\b"),
     LOGIC_OPERATOR_NOT("not\\b"),
+    
+    MATH_OPERATOR_ADD("+=\\b"),
+    MATH_OPERATOR_SUB("-=\\b"),
+    MATH_OPERATOR_MUL("*=\\b"),
+    MATH_OPERATOR_DIV("/=\\b"),
+    MATH_OPERATOR_MOD("%=\\b"),
+    MATH_OPERATOR_POW("^=\\b"),
+    MATH_OPERATOR_ROO("~=\\b"),
     
     RELATIONAL_OPERATOR_EQUALS("=="),
     RELATIONAL_OPERATOR_DIFFERENT("<>"),
@@ -65,7 +78,8 @@ public enum Token {
     COMMA("\\,"),
     SEMICOLON("\\;"),
     TYPE_SPECIFIER("\\|"),
-    STRING("\"[^\"]+\""),
+    STRING("\"[^\"]*\""),
+    MAIN("main\\b"),
     NUMBER("\\d+[f|d]?(\\.\\d+[f|d]?)?"),
     IDENTIFIER("([a-zA-Z]|_*[a-zA-Z]){1}[a-zA-Z0-9_]*"),
     ;

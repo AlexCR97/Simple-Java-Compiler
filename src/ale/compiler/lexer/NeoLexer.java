@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class Lexer {
+public class NeoLexer {
     
     private static final Set<Character> BLANK_CHARACTERS = new HashSet<>();
     static {
@@ -38,7 +38,7 @@ public class Lexer {
     private Map<String, String> tokensTable = new LinkedHashMap<>();
     private List<TokenItem> tokenItems = new ArrayList<>();
     
-    public Lexer(String filePath) {
+    public NeoLexer(String filePath) {
         try {
             Path path = Paths.get(filePath);
             Stream<String> fileContents = Files.lines(path);
@@ -131,6 +131,44 @@ public class Lexer {
     
     public List<TokenItem> getTokenItems() {
         return tokenItems;
+    }
+    
+    public List<String> getTokenIdentifiers() {
+        List<String> tokens = new ArrayList<>();
+        
+        tokenItems.forEach((tokenItem) -> {
+            String currentToken = tokenItem.token;
+            String currentLexeme = tokenItem.lexeme;
+            
+            if (currentToken.equals(Token.IDENTIFIER.name()) && !tokens.contains(currentLexeme))
+                tokens.add(currentLexeme);
+        });
+        
+        return tokens;
+    }
+    
+    public List<String> getTokenNumbers() {
+        List<String> tokens = new ArrayList<>();
+
+        tokenItems.forEach((tokenItem) -> {
+            String currentToken = tokenItem.token;
+            String currentLexeme = tokenItem.lexeme;
+            
+            if (currentToken.equals(Token.NUMBER.name()) && !tokens.contains(currentLexeme))
+                tokens.add(currentLexeme);
+        });
+        
+        return tokens;
+    }
+    
+    public List<String> getTokenStrings() {
+        List<String> tokens = new ArrayList<>();
+        
+        tokenItems.stream()
+                .filter((tokenItem) -> tokenItem.token.equals(Token.STRING.name()) && !tokens.contains(tokenItem.lexeme))
+                .forEach((tokenItem) -> tokens.add(tokenItem.lexeme));
+        
+        return tokens;
     }
     
 }

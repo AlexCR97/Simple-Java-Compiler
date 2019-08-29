@@ -29,7 +29,7 @@ public class TokenColor {
     static {
         COLORS.put(Token.COMMENT.name(), COMMENT);
         
-        COLORS.put(Token.PREPROCESOR_IMPORT.name(), PREPROCESOR);
+        COLORS.put(Token.IMPORT.name(), PREPROCESOR);
         
         COLORS.put(Token.RESERVED_WORD_CONST.name(), RESERVED_WORD);
         COLORS.put(Token.RESERVED_WORD_NAMESPACE.name(), RESERVED_WORD);
@@ -42,7 +42,7 @@ public class TokenColor {
         COLORS.put(Token.FLOW_CONTROLLER_FOR.name(), FLOW_CONTROLLER);
         COLORS.put(Token.FLOW_CONTROLLER_IF.name(), FLOW_CONTROLLER);
         COLORS.put(Token.FLOW_CONTROLLER_ITERATE.name(), FLOW_CONTROLLER);
-        COLORS.put(Token.FLOW_CONTROLLER_SWITCH.name(), FLOW_CONTROLLER);
+        COLORS.put(Token.FLOW_CONTROLLER_WHEN.name(), FLOW_CONTROLLER);
         COLORS.put(Token.FLOW_CONTROLLER_WHILE.name(), FLOW_CONTROLLER);
         
         COLORS.put(Token.DATA_TYPE_ARRAY.name(), DATA_TYPE);

@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 
 public class Main {
     
+    private static final long LOAD_TIME = 6000;
+    
     public static void main(String args[]) {
         
         try {
@@ -21,7 +23,8 @@ public class Main {
             ex.printStackTrace();
         }
         
-        openSplashFrame();
+        //openSplashFrame();
+        openMainFrame();
     }
     
     public static void openMainFrame() {
@@ -37,7 +40,7 @@ public class Main {
         splash.setVisible(true);
         
         try {
-            Thread.sleep(6000);
+            Thread.sleep(LOAD_TIME);
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
