@@ -149,7 +149,7 @@ public class NeoLexer {
     
     public List<String> getTokenNumbers() {
         List<String> tokens = new ArrayList<>();
-        
+
         tokenItems.forEach((tokenItem) -> {
             String currentToken = tokenItem.token;
             String currentLexeme = tokenItem.lexeme;
@@ -157,6 +157,16 @@ public class NeoLexer {
             if (currentToken.equals(Token.NUMBER.name()) && !tokens.contains(currentLexeme))
                 tokens.add(currentLexeme);
         });
+        
+        return tokens;
+    }
+    
+    public List<String> getTokenStrings() {
+        List<String> tokens = new ArrayList<>();
+        
+        tokenItems.stream()
+                .filter((tokenItem) -> tokenItem.token.equals(Token.STRING.name()) && !tokens.contains(tokenItem.lexeme))
+                .forEach((tokenItem) -> tokens.add(tokenItem.lexeme));
         
         return tokens;
     }

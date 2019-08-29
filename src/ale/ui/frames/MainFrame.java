@@ -153,7 +153,12 @@ public class MainFrame extends javax.swing.JFrame {
                     true
             );
             
-            lexicalAnalysis(file);
+            boolean success;
+            
+            success = lexicalAnalysis(file);
+            if (!success)
+                return;
+            
             syntaxAnalysis();
         }
     };
@@ -167,7 +172,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         lexer = new NeoLexer(file.getAbsolutePath());
         while (lexer.hasNext()) {}
-
+        
         if (!lexer.isSuccessful()) {
             this.outputModule.outputln(
                     "COMPILATION ERROR. Could not complete lexical analysis: " + lexer.getErrorMessage(),
@@ -189,7 +194,7 @@ public class MainFrame extends javax.swing.JFrame {
     
     private boolean syntaxAnalysis() {
         this.outputModule.outputln(
-                "Performing syntax analysis...",
+                "\nPerforming syntax analysis...",
                 OutputModule.OUTPUT_TYPE_PLAIN,
                 false
         );
@@ -204,6 +209,7 @@ public class MainFrame extends javax.swing.JFrame {
         parser.grammarResetGrammar();
         parser.grammarAddDynamicRule("<id>", lexer.getTokenIdentifiers());
         parser.grammarAddDynamicRule("<number>", lexer.getTokenNumbers());
+        parser.grammarAddDynamicRule("<string>", lexer.getTokenStrings());
         ////////////////////////////////////////////////////////////////////////
         
         boolean success = parser.parse(tokens);

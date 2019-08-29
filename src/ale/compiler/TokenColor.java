@@ -42,7 +42,7 @@ public class TokenColor {
         COLORS.put(Token.FLOW_CONTROLLER_FOR.name(), FLOW_CONTROLLER);
         COLORS.put(Token.FLOW_CONTROLLER_IF.name(), FLOW_CONTROLLER);
         COLORS.put(Token.FLOW_CONTROLLER_ITERATE.name(), FLOW_CONTROLLER);
-        COLORS.put(Token.FLOW_CONTROLLER_SWITCH.name(), FLOW_CONTROLLER);
+        COLORS.put(Token.FLOW_CONTROLLER_WHEN.name(), FLOW_CONTROLLER);
         COLORS.put(Token.FLOW_CONTROLLER_WHILE.name(), FLOW_CONTROLLER);
         
         COLORS.put(Token.DATA_TYPE_ARRAY.name(), DATA_TYPE);

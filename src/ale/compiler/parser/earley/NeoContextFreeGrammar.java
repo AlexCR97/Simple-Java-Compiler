@@ -1,225 +1,299 @@
 package ale.compiler.parser.earley;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class NeoContextFreeGrammar extends ContextFreeGrammar {    
     
     @Override
     protected void initStartRules() {
-        List<String> rules = Arrays.asList(
-                "<namespace>",
-                "<import-list> <namespace>"
-        );
-        this.addStartRules(rules);
+        addStartRules(Arrays.asList(
+                "<namespace>"
+        ));
     }
-
+    
     @Override
     protected void initProductionRules() {
-        List<String> importListRules = Arrays.asList(
-                "neo :: <import>",
-                "neo :: <import> <import-list>"
-        );
-        addProductionRules("<import-list>", importListRules);
+        addProductionRules("<namespace>", Arrays.asList(
+                "namespace <namespace-id> <namespace-block>"
+        ));
         
-        List<String> importRules = Arrays.asList(
-                "<id> ;",
-                "<id> :: <import>"
-        );
-        addProductionRules("<import>", importRules);
+        addProductionRules("<namespace-id>", Arrays.asList(
+                "<id> :: <namespace-id>",
+                "<id>"
+        ));
         
-        List<String> namespaceRules = Arrays.asList(
-                "namespace <id-namespace> { }",
-                "namespace <id-namespace> { <main> }"
-        );
-        addProductionRules("<namespace>", namespaceRules);
+        addProductionRules("<namespace-block>", Arrays.asList(
+                "{ }",
+                "{ <namespace-block-content> }"
+        ));
         
-        List<String> idNamespaceRules = Arrays.asList(
-                "<id>",
-                "<id> :: <id-namespace>"
-        );
-        addProductionRules("<id-namespace>", idNamespaceRules);
-        
-        List<String> mainRules = Arrays.asList(
-                "void main ( ) { }",
-                "void main ( ) { <statement-list> }"
-        );
-        addProductionRules("<main>", mainRules);
-        
-        List<String> statementListRules = Arrays.asList(
-                "<statement> <statement-list>",
-                "<statement>"
-        );
-        addProductionRules("<statement-list>", statementListRules);
-        
-        List<String> statementRules = Arrays.asList(
-                "<static-declaration> ;",
-                "<dynamic-declaration> ;",
+        addProductionRules("<namespace-block-content>", Arrays.asList(
+                "<var-declaration> ; <namespace-block-content>",
+                "<var-declaration> ;",
+
+                "<const-declaration> ; <namespace-block-content>",
                 "<const-declaration> ;",
-                "<assignment> ;",
-                "<function-call> ;",
+
+                "<func-declaration> <namespace-block-content>",
+                "<func-declaration>",
+
+                "<main>"
+        ));
+        
+        addProductionRules("<main>", Arrays.asList(
+                "void main ( ) <func-block>"
+        ));
+        
+        addProductionRules("<func-block>", Arrays.asList(
+                "{ }",
+                "{ <statement-list> }"
+        ));
+        
+        addProductionRules("<statement-list>", Arrays.asList(
+                "<statement> ; <statement-list>",
+                "<statement> ;",
                 
+                "<flow-controller> <statement-list>",
+                "<flow-controller>"
+        ));
+        
+        addProductionRules("<statement>", Arrays.asList(
+                "<var-declaration>",
+                "<const-declaration>",
+                "<assignment>",
+                "<func-call>",
+                
+                "return",
+                "return <assignable>"
+        ));
+        
+        addProductionRules("<flow-controller>", Arrays.asList(
                 "<if>",
-                "<switch>",
+                "<when>",
                 "<while>",
                 "<for>"
-        );
-        addProductionRules("<statement>", statementRules);
+        ));
+        
+        addProductionRules("<var-declaration>", Arrays.asList(
+                "<type> <var-declaration-list>",
+                "var <var-declaration-list-dynamic>"
+        ));
+        
+        addProductionRule("<type>", "int float double bool char string");
+        
+        addProductionRules("<var-declaration-list>", Arrays.asList(
+                "<id> , <var-declaration-list>",
+                "<assignment> , <var-declaration-list>",
+                "<assignment>",
+                "<id>"
+        ));
+        
+        addProductionRules("<assignment>", Arrays.asList(
+                "<id> = <assignable>"
+        ));
+        
+        addProductionRules("<var-declaration-list-dynamic>", Arrays.asList(
+                "<assignment> , <var-declaration-list>",
+                "<assignment>"
+        ));
+        
+        addProductionRules("<assignable>", Arrays.asList(
+                "<id>",
+                "<number>",
+                "<bool>",
+                "<string>",
+                "<func-call>"
+        ));
+        
+        addProductionRule("<bool>", "true false");
+        
+        addProductionRules("<func-call>", Arrays.asList(
+                "<func-call-id> ( )",
+                "<func-call-id> ( <assignable-list> )"
+        ));
+        
+        addProductionRules("<func-call-id>", Arrays.asList(
+                "<id> . <func-call-id>",
+                "<id> :: <func-call-id>",
+                "<id>"
+        ));
+        
+        addProductionRules("<assignable-list>", Arrays.asList(
+                "<assignable> , <assignable-list>",
+                "<assignable>"
+        ));
+        
+        addProductionRules("<const-declaration>", Arrays.asList(
+                "const <const-declaration-list>"
+        ));
 
-        List<String> staticDeclarationRules = Arrays.asList(
-                "<type> <id>",
-                "<type> <id> = <id>",
-                "<type> <id> = <number>",
-                "<type> <id> = <function-call>"
-        );
-        addProductionRules("<static-declaration>", staticDeclarationRules);
+        addProductionRules("<const-declaration-list>", Arrays.asList(
+                "<assignment> , <const-declaration-list>",
+                "<assignment>"
+        ));
         
-        List<String> dynamicDeclarationRules = Arrays.asList(
-                "var <id> = <id>",
-                "var <id> = <number>",
-                "var <id> = <function-call>"
-        );
-        addProductionRules("<dynamic-declaration>", dynamicDeclarationRules);
+        addProductionRules("<func-declaration>", Arrays.asList(
+                "<func-type> <id> ( <param-list> ) <func-block>",
+                "<func-type> <id> ( ) <func-block>"
+        ));
         
-        List<String> constDeclarationRules = Arrays.asList(
-                "const <id> = <id>",
-                "const <id> = <number>",
-                "const <id> = <function-call>"
-        );
-        addProductionRules("<const-declaration>", constDeclarationRules);
+        addProductionRules("<func-type>", Arrays.asList(
+                "void",
+                "<type>"
+        ));
         
-        List<String> assignmentRules = Arrays.asList(
-                "<id> = <id>",
-                "<id> = <number>",
-                "<id> = <function-call>"
-        );
-        addProductionRules("<assignment>", assignmentRules);
-        
-        addProductionRule("<type>", "int float double char string bool");
-        
-        //addProductionRule("<id>", "a b c d e f g h i j k l m n o p q r s t u v w x y z var0 var1 var2 var3 var4 var5 var6 var7 var8 var9 foo lorem ipsum");
-        
-        //addProductionRule("<number>", "0 1 2 3 4 5 6 7 8 9");
-        
-        List<String> functionCallRules = Arrays.asList(
-                "<id> ( )",
-                "<id> . <id> ( )",
-                "<id> :: <id> ( )"
-        );
-        addProductionRules("<function-call>", functionCallRules);
-        
-        List<String> ifRules = Arrays.asList(
-                "if ( <condition> ) { }",
-                "if ( <condition> ) { } else { }",
+        addProductionRules("<param-list>", Arrays.asList(
+                "<param> , <param-list>",
+                "<param>"
+        ));
 
-                "if ( <condition> ) { <statement-list> } else { }",
-                "if ( <condition> ) { } else { <statement-list> }",
-                
-                "if ( <condition> ) { <statement-list> }",
-                "if ( <condition> ) { <statement-list> } else { <statement-list> }"
-        );
-        addProductionRules("<if>", ifRules);
+        addProductionRules("<param>", Arrays.asList(
+                "<type> <id>"
+        ));
         
-        List<String> conditionRules = Arrays.asList(
-                "<id> <relational-operator> <id>",
-                "<id> <relational-operator> <number>",
-                "<number> <relational-operator> <number>",
-                "<number> <relational-operator> <id>"
-        );
-        addProductionRules("<condition>", conditionRules);
+        addProductionRules("<if>", Arrays.asList(
+                "if ( <relational-operation> ) <if-block>",
+                "if ( <relational-operation> ) <if-block> else <if>",
+                "if ( <relational-operation> ) <if-block> else <if-block>"
+        ));
         
-        addProductionRule("<relational-operator>", "> < == >= <= !=");
-
-        List<String> switchRules = Arrays.asList(
-                "switch ( <id> ) { }",
-                "switch ( <id> ) { <case-list> }"
-        );
-        addProductionRules("<switch>", switchRules);
+        addProductionRules("<if-block>", Arrays.asList(
+                "<func-block>",
+                "<statement> ;",
+                "<flow-controller>"
+        ));
         
-        List<String> caseListRules = Arrays.asList(
-                "case <number> { }",
-                "case <number> { } <case-list>",
-                "case <number> { <statement-list> }",
-                "case <number> { <statement-list> } <case-list>"
-        );
-        addProductionRules("<case-list>", caseListRules);
+        addProductionRules("<relational-operation>", Arrays.asList(
+                "<relational-term> <relational-operator> <relational-term>"
+        ));
         
-        List<String> whileRules = Arrays.asList(
-                "while ( <condition> ) { }",
-                "while ( <condition> ) { <statement-list> }"
-        );
-        addProductionRules("<while>", whileRules);
+        addProductionRules("<relational-term>", Arrays.asList(
+                "<assignable>"
+        ));
         
-        List<String> forRules = Arrays.asList(
-                "for ( ; ; ) { }",
-                "for ( <static-declaration> ; ; ) { }",
-                "for ( <dynamic-declaration> ; ; ) { }",
-                "for ( <assignment> ; ; ) { }",
-                
-                "for ( ; <condition> ; ) { }",
-                "for ( <static-declaration> ; <condition> ; ) { }",
-                "for ( <dynamic-declaration> ; <condition> ; ) { }",
-                "for ( <assignment> ; <condition> ; ) { }",
-                
-                "for ( ; <condition> ; <assignment> ) { }",
-                "for ( <static-declaration> ; <condition> ; <assignment> ) { }",
-                "for ( <dynamic-declaration> ; <condition> ; <assignment> ) { }",
-                "for ( <assignment> ; <condition> ; <assignment> ) { }",
-                
-                "for ( ; ; ) { <statement-list> }",
-                "for ( <static-declaration> ; ; ) { <statement-list> }",
-                "for ( <dynamic-declaration> ; ; ) { <statement-list> }",
-                "for ( <assignment> ; ; ) { <statement-list> }",
-                
-                "for ( ; <condition> ; ) { <statement-list> }",
-                "for ( <static-declaration> ; <condition> ; ) { <statement-list> }",
-                "for ( <dynamic-declaration> ; <condition> ; ) { <statement-list> }",
-                "for ( <assignment> ; <condition> ; ) { <statement-list> }",
-                
-                "for ( ; <condition> ; <assignment> ) { <statement-list> }",
-                "for ( <static-declaration> ; <condition> ; <assignment> ) { <statement-list> }",
-                "for ( <dynamic-declaration> ; <condition> ; <assignment> ) { <statement-list> }",
-                "for ( <assignment> ; <condition> ; <assignment> ) { <statement-list> }"
-        );
-        addProductionRules("<for>", forRules);
+        addProductionRule("<relational-operator>", "== <> < <= > >=");
         
-        addProductionRule("neo", "neo");
+        addProductionRules("<when>", Arrays.asList(
+                "when ( <id> ) <when-block>",
+                "when ( <func-call> ) <when-block>"
+        ));
+        
+        addProductionRules("<when-block>", Arrays.asList(
+                "{ }",
+                "{ <when-match-list> }"
+        ));
+        
+        addProductionRules("<when-match-list>", Arrays.asList(
+                "<when-match> <when-match-list>",
+                "<when-match>",
+                "<when-default>"
+        ));
+        
+        addProductionRules("<when-match>", Arrays.asList(
+                "matches <assignable-list> <func-block>"
+        ));
+        
+        addProductionRules("<when-default>", Arrays.asList(
+                "default <func-block>"
+        ));
+        
+        addProductionRules("<while>", Arrays.asList(
+                "while ( <relational-operation> ) <while-block>",
+                "while ( <id> ) <while-block>",
+                "while ( <func-call> ) <while-block>"
+        ));
+        
+        addProductionRules("<while-block>", Arrays.asList(
+                "<func-block>",
+                "<statement> ;",
+                "<flow-controller>"
+        ));
+        
+        addProductionRules("<for>", Arrays.asList(
+                "for ( <for-params> ) <for-block>"
+        ));
+        
+        addProductionRules("<for-params>", Arrays.asList(
+                "; ;",
+                "<for-param-1> ; ;",
+                "; <for-param-2> ;",
+                "<for-param-1> ; <for-param-2> ;",
+                "; ; <for-param-3>",
+                "<for-param-1> ; ; <for-param-3>",
+                "; <for-param-2> ; <for-param-3>",
+                "<for-param-1> ; <for-param-2> ; <for-param-3>"
+        ));
+        
+        addProductionRules("<for-param-1>", Arrays.asList(
+                "<var-declaration>"
+        ));
+        
+        addProductionRules("<for-param-2>", Arrays.asList(
+                "<relational-operation>"
+        ));
+        
+        addProductionRules("<for-param-3>", Arrays.asList(
+                "<assignment>"
+        ));
+        
+        addProductionRules("<for-block>", Arrays.asList(
+                "<func-block>",
+                "<statement> ;",
+                "<flow-controller>"
+        ));
+        
         addProductionRule("namespace", "namespace");
-        addProductionRule("void", "void"); addProductionRule("main", "main");
-        addProductionRule("var", "var"); addProductionRule("const", "const");
-        addProductionRule("if", "if"); addProductionRule("else", "else");
-        addProductionRule("switch", "switch"); addProductionRule("case", "case");
+        addProductionRule("::", "::");
+        addProductionRule("{", "{");
+        addProductionRule("}", "}");
+        addProductionRule("void", "void");
+        addProductionRule("main", "main");
+        addProductionRule("(", "(");
+        addProductionRule(")", ")");
+        addProductionRule(";", ";");
+        addProductionRule(",", ",");
+        addProductionRule("=", "=");
+        addProductionRule(".", ".");
+        addProductionRule("var", "var");
+        addProductionRule("const", "const");
+        addProductionRule("return", "return");
+        addProductionRule("if", "if");
+        addProductionRule("else", "else");
+        addProductionRule("when", "when");
+        addProductionRule("matches", "matches");
+        addProductionRule("default", "default");
         addProductionRule("while", "while");
         addProductionRule("for", "for");
-        addProductionRule("f", "f"); addProductionRule("d", "d");
-        addProductionRule(".", ".");
-        addProductionRule("=", "=");
-        addProductionRule(";", ";");
-        addProductionRule("::", "::");
-        addProductionRule("(", "("); addProductionRule(")", ")");
-        addProductionRule("{", "{"); addProductionRule("}", "}");
     }
 
     @Override
     protected void initPos() {
-        addPos("<relational-operator>");
         addPos("<type>");
-
-        addPos("neo");
+        addPos("<bool>");
+        addPos("<relational-operator>");
+        
         addPos("namespace");
-        addPos("void"); addPos("main");
-        addPos("var"); addPos("const");
-        addPos("if"); addPos("else");
-        addPos("switch"); addPos("case");
+        addPos("::");
+        addPos("{");
+        addPos("}");
+        addPos("void");
+        addPos("main");
+        addPos("(");
+        addPos(")");
+        addPos(";");
+        addPos(",");
+        addPos("=");
+        addPos(".");
+        addPos("var");
+        addPos("const");
+        addPos("return");
+        addPos("if");
+        addPos("else");
+        addPos("when");
+        addPos("matches");
+        addPos("default");
         addPos("while");
         addPos("for");
-        addPos("f"); addPos("d");
-        addPos(".");
-        addPos("=");
-        addPos(";");
-        addPos("::");
-        addPos("("); addPos(")");
-        addPos("{"); addPos("}");
     }
     
 }
