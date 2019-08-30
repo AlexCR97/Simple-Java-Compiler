@@ -8,8 +8,9 @@ public enum Token {
     COMMENT("\\/\\*[\\s\\S]*?\\*\\/"),
     
     //IMPORT("@[a-z]+(\\/[a-z]+)*"),
-    IMPORT("@[a-z]+(::[a-z]+)*"),
+    //IMPORT("#[a-z]+(::[a-z]+)*\\b"),
     
+    RESERVED_WORD_USE("use\\b"),
     RESERVED_WORD_NAMESPACE("namespace\\b"),
     RESERVED_WORD_VOID("void\\b"),
     RESERVED_WORD_RETURN("return\\b"),

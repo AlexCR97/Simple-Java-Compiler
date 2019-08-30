@@ -7,12 +7,29 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
     @Override
     protected void initStartRules() {
         addStartRules(Arrays.asList(
-                "<namespace>"
+                "<use-list>",
+                "<namespace>",
+                "<use-list> <namespace>"
         ));
     }
     
     @Override
     protected void initProductionRules() {
+        
+        addProductionRules("<use-list>", Arrays.asList(
+                "<use-statement> ; <use-list>",
+                "<use-statement> ;"
+        ));
+        
+        addProductionRules("<use-statement>", Arrays.asList(
+                "use <use-id>"
+        ));
+        
+        addProductionRules("<use-id>", Arrays.asList(
+                "<id> :: <use-id>",
+                "<id>"
+        ));
+        
         addProductionRules("<namespace>", Arrays.asList(
                 "namespace <namespace-id> <namespace-block>"
         ));
@@ -61,6 +78,7 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
                 "<var-declaration>",
                 "<const-declaration>",
                 "<assignment>",
+                "<math-assignment>",
                 "<func-call>",
                 
                 "return",
@@ -99,13 +117,35 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
         
         addProductionRules("<assignable>", Arrays.asList(
                 "<id>",
-                "<number>",
+                "<arithmetic-expression>",
                 "<bool>",
                 "<string>",
                 "<func-call>"
         ));
         
+        addProductionRules("<arithmetic-expression>", Arrays.asList(
+                "<number>",
+                "<id>",
+                "<func-call>",
+                "( <arithmetic-expression> )",
+                "<arithmetic-expression> <arithmetic-operator> <arithmetic-expression>"
+        ));
+        
+        addProductionRule("<arithmetic-operator>", "+ - * / % ^ ~");
+        
         addProductionRule("<bool>", "true false");
+        
+        addProductionRules("<math-assignment>", Arrays.asList(
+                "<id> <math-operator> <math-assignable>"
+        ));
+        
+        addProductionRule("<math-operator>", "+= -= *= /= %= ^= ~=");
+        
+        addProductionRules("<math-assignable>", Arrays.asList(
+                "<id>",
+                "<arithmetic-expression>",
+                "<func-call>"
+        ));
         
         addProductionRules("<func-call>", Arrays.asList(
                 "<func-call-id> ( )",
@@ -233,7 +273,8 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
         ));
         
         addProductionRules("<for-param-3>", Arrays.asList(
-                "<assignment>"
+                "<assignment>",
+                "<math-assignment>"
         ));
         
         addProductionRules("<for-block>", Arrays.asList(
@@ -242,6 +283,7 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
                 "<flow-controller>"
         ));
         
+        addProductionRule("use", "use");
         addProductionRule("namespace", "namespace");
         addProductionRule("::", "::");
         addProductionRule("{", "{");
@@ -270,8 +312,11 @@ public class NeoContextFreeGrammar extends ContextFreeGrammar {
     protected void initPos() {
         addPos("<type>");
         addPos("<bool>");
+        addPos("<arithmetic-operator>");
         addPos("<relational-operator>");
+        addPos("<math-operator>");
         
+        addPos("use");
         addPos("namespace");
         addPos("::");
         addPos("{");
