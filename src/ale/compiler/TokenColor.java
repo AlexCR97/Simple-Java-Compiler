@@ -7,7 +7,6 @@ import java.util.Map;
 public class TokenColor {
     
     private static final Color COMMENT = Color.GRAY;
-    private static final Color PREPROCESOR = Color.ORANGE.darker();
     private static final Color RESERVED_WORD = Color.RED;
     private static final Color FLOW_CONTROLLER = Color.RED;
     private static final Color DATA_TYPE = Color.RED;
@@ -28,8 +27,6 @@ public class TokenColor {
     private static final Map<String, Color> COLORS = new HashMap<>();
     static {
         COLORS.put(Token.COMMENT.name(), COMMENT);
-        
-        COLORS.put(Token.IMPORT.name(), PREPROCESOR);
         
         COLORS.put(Token.RESERVED_WORD_CONST.name(), RESERVED_WORD);
         COLORS.put(Token.RESERVED_WORD_NAMESPACE.name(), RESERVED_WORD);
